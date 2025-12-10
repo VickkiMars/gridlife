@@ -8,8 +8,6 @@ import {
   Plus,
   Trash2,
   Save,
-  Edit,
-  X,
   Download,
 } from "lucide-react";
 import {
@@ -23,7 +21,6 @@ import {
   subDays,
   startOfToday,
   startOfWeek,
-  endOfWeek,
   eachMonthOfInterval,
   differenceInDays,
   parseISO,
@@ -183,8 +180,7 @@ interface CellProps {
 
 const Cell = ({ 
   date, 
-  tasks, 
-  isFuture, 
+  tasks,
   isSelected, 
   onClick, 
   onHover,
@@ -194,7 +190,7 @@ const Cell = ({
   const color = getCellColor(tasks);
   const cellRef = React.useRef<HTMLDivElement>(null);
   
-  const handleMouseEnter = (e: React.MouseEvent) => {
+  const handleMouseEnter = () => {
     if (!cellRef.current || !isInRange) return;
     
     const rect = cellRef.current.getBoundingClientRect();
@@ -437,7 +433,7 @@ const App = () => {
     showDateOnly: true,
   });
   
-  const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const hoverTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const today = startOfToday();
 
   // Load data from localStorage
@@ -465,7 +461,7 @@ const App = () => {
   }, [data]);
 
   // Generate exact GitHub-style calendar grid (53 columns, 7 rows)
-  const { grid, months, dayLabels, totalWeeks } = useMemo(() => {
+  const { grid, months, dayLabels } = useMemo(() => {
     // GitHub shows exactly 1 year of data (53 weeks)
     const oneYearAgo = subDays(today, 364); // 364 days = 52 weeks
     const startDate = startOfWeek(oneYearAgo, { weekStartsOn: 0 }); // Align to Sunday
@@ -493,7 +489,6 @@ const App = () => {
 
     // Calculate month labels with better positioning
     const monthLabels: MonthLabel[] = [];
-    const currentYear = today.getFullYear();
     
     // Get all months in the current year
     const yearStart = startOfYear(today);
@@ -530,7 +525,7 @@ const App = () => {
       { label: 'Sun', row: 0 },
     ];
 
-    return { grid, months: monthLabels, dayLabels, totalWeeks: weeks.length };
+    return { grid, months: monthLabels, dayLabels };
   }, [today]);
 
   // File upload handler
