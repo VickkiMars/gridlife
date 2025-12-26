@@ -6,7 +6,7 @@ export const COLORS = {
   
   // Heatmap Scale (0 = Empty, 4 = Peak)
   levels: {
-    0: '#1A1A1A',
+    0: '#545252ff',
     1: 'rgba(59, 130, 246, 0.25)',
     2: 'rgba(59, 130, 246, 0.50)',
     3: 'rgba(59, 130, 246, 0.75)',

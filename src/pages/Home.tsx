@@ -1,29 +1,48 @@
 import React, { useState, useMemo } from "react";
-import { subDays, eachDayOfInterval, format, isSameDay } from "date-fns";
+import { format, isSameDay } from "date-fns";
 import { Upload, Download, Activity } from "lucide-react";
 
 import { usePersistentData } from "../hooks/usePersistentData";
 import { Timeline } from "../components/visualization/Timeline";
 import { MonthlyHeatmap } from "../components/visualization/MonthlyHeatmap";
 import { TaskEntry } from "../components/tasks/TaskEntry";
-import { COLORS } from "../types/index.ts";
-import type { Task } from "../types/index.ts";
+import { COLORS } from "../types/index";
+import type { Task } from "../types/index";
 
 const Home: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const { entries, setEntries, exportData, importData } = usePersistentData();
 
-  // 35 days for timeline/heatmap (5 weeks)
-  const dateRange = useMemo(
-    () =>
-      eachDayOfInterval({
-        start: subDays(new Date(), 34),
-        end: new Date(),
-      }).reverse(),
-    []
-  );
+  // 1. Prepare Data for Heatmap
+  // Calculates intensity and whether the day is fully "conquered" (Blue) or pending (Amber)
+  const heatmapData = useMemo(() => {
+    return entries.map((entry) => {
+      const taskCount = entry.tasks.length;
+      // It is "All Done" if there are tasks AND every single one is completed.
+      const isAllDone = taskCount > 0 && entry.tasks.every(t => t.completed);
+      
+      return {
+        date: entry.date,
+        intensity: taskCount,
+        isAllDone: isAllDone
+      };
+    });
+  }, [entries]);
 
-  // Filter tasks for selected date
+  // 2. Prepare Data for Timeline
+  // Passes specific status flags so the timeline can color the dots (Amber/Blue/Grey)
+  const timelineStatus = useMemo(() => {
+    return entries.map((entry) => {
+      const taskCount = entry.tasks.length;
+      return {
+        date: entry.date,
+        hasData: taskCount > 0,
+        isAllDone: taskCount > 0 && entry.tasks.every(t => t.completed)
+      };
+    });
+  }, [entries]);
+
+  // 3. Get Tasks for the current selection
   const activeTasks = useMemo(
     () => entries.find((e) => isSameDay(e.date, selectedDate))?.tasks || [],
     [entries, selectedDate]
@@ -36,29 +55,25 @@ const Home: React.FC = () => {
     0
   );
 
-  // Handles the checkbox toggle logic
-  const handleToggle = (id: string) => {
+  // --- HANDLERS ---
+
+  const handleToggle = (taskId: string) => {
     setEntries((prev) =>
       prev.map((entry) => {
-        if (isSameDay(entry.date, selectedDate)) {
-          return {
-            ...entry,
-            tasks: entry.tasks.map((t) =>
-              t.id === id ? { ...t, completed: !t.completed } : t
-            ),
-          };
-        }
-        return entry;
+        if (!isSameDay(entry.date, selectedDate)) return entry;
+        return {
+          ...entry,
+          tasks: entry.tasks.map((t) =>
+            t.id === taskId ? { ...t, completed: !t.completed } : t
+          ),
+        };
       })
     );
   };
 
-  // Handles adding a new task (receives full Task object from TaskEntry)
   const handleAddTask = (newTask: Task) => {
     setEntries((prev) => {
-      // Check if an entry for the selected date already exists
       const exists = prev.find((e) => isSameDay(e.date, selectedDate));
-
       if (exists) {
         return prev.map((e) =>
           isSameDay(e.date, selectedDate)
@@ -66,10 +81,23 @@ const Home: React.FC = () => {
             : e
         );
       }
-
-      // If no entry exists for this date, create a new entry with this task
       return [...prev, { date: selectedDate, tasks: [newTask] }];
     });
+  };
+
+  const handleDeleteTask = (taskId: string) => {
+    setEntries((prev) => 
+      prev.map((entry) => {
+        // Find the day entry
+        if (!isSameDay(entry.date, selectedDate)) return entry;
+        
+        // Filter out the specific task
+        const updatedTasks = entry.tasks.filter((t) => t.id !== taskId);
+        
+        // Return updated entry
+        return { ...entry, tasks: updatedTasks };
+      })
+    );
   };
 
   return (
@@ -77,6 +105,7 @@ const Home: React.FC = () => {
       className="min-h-screen p-6 font-sans text-gray-100"
       style={{ backgroundColor: COLORS.background }}
     >
+      {/* HEADER */}
       <header className="max-w-[1600px] mx-auto mb-8 flex justify-between items-center">
         <div className="flex items-center gap-3">
           <div
@@ -113,7 +142,7 @@ const Home: React.FC = () => {
             </div>
           </div>
 
-          {/* Actions */}
+          {/* Import/Export */}
           <label
             className="p-2 rounded-lg border cursor-pointer hover:bg-white/5 transition-colors"
             style={{ borderColor: COLORS.border }}
@@ -138,11 +167,13 @@ const Home: React.FC = () => {
         </div>
       </header>
 
+      {/* GRID LAYOUT */}
       <main className="max-w-[1600px] mx-auto grid grid-cols-12 gap-6">
-        {/* Left: Scrollable Timeline */}
+        
+        {/* Left: Timeline (15-day sliding window) */}
         <div className="col-span-12 lg:col-span-3">
           <Timeline
-            dates={dateRange}
+            datesStatus={timelineStatus} // Passes rich status (Done/Pending/Empty)
             selectedDate={selectedDate}
             onSelect={setSelectedDate}
           />
@@ -162,17 +193,14 @@ const Home: React.FC = () => {
             tasks={activeTasks}
             onToggle={handleToggle}
             onAddTask={handleAddTask}
+            onDelete={handleDeleteTask}
           />
         </div>
 
-        {/* Right: Large Heatmap */}
+        {/* Right: Heatmap (Monthly/Yearly) */}
         <div className="col-span-12 lg:col-span-3">
           <MonthlyHeatmap
-            data={dateRange.map((d) => ({
-              date: d,
-              intensity:
-                entries.find((e) => isSameDay(e.date, d))?.tasks.length || 0,
-            }))}
+            data={heatmapData} // Now includes isAllDone for color coding
             selectedDate={selectedDate}
             onSelect={setSelectedDate}
           />

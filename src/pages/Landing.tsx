@@ -1,58 +1,75 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom'; // Import the hook
-import { 
-  Layers, 
-  ArrowRight, 
-  PlayCircle, 
-  TrendingUp, 
-  Brain, 
-  Grid, 
-  Network, 
-  Zap, 
-  AlertTriangle, 
-  LineChart 
-} from 'lucide-react';
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  Layers,
+  ArrowRight,
+  Play,
+  Activity,
+  Cpu,
+  Grid,
+  Share2,
+  Zap,
+  Terminal,
+  BarChart3,
+} from "lucide-react";
 
 /**
  * Landing Component
- * Modified to include programmatic routing to /create
+ * Aesthetic: Industrial Dark, Monospace Accents, Neon Blue (#3b82f6)
  */
 const Landing: React.FC = () => {
-  const navigate = useNavigate(); // Initialize the navigate function
+  const navigate = useNavigate();
 
-  // CSS Mask styles for the grid overlay
-  const gridOverlayStyle: React.CSSProperties = {
-    maskImage: 'linear-gradient(to bottom, transparent, black, transparent)',
-    WebkitMaskImage: 'linear-gradient(to bottom, transparent, black, transparent)',
-  };
-
-  const gridPatternLight = 'linear-gradient(to right, #E5E5E5 1px, transparent 1px), linear-gradient(to bottom, #E5E5E5 1px, transparent 1px)';
-  const gridPatternDark = 'linear-gradient(to right, #262626 1px, transparent 1px), linear-gradient(to bottom, #262626 1px, transparent 1px)';
+  // Background Grid Pattern
+  const gridPattern =
+    "linear-gradient(to right, #27272a 1px, transparent 1px), linear-gradient(to bottom, #27272a 1px, transparent 1px)";
 
   return (
-    <div className="bg-[#F7F7F7] dark:bg-[#0A0A0A] text-[#171717] dark:text-[#EDEDED] font-sans antialiased transition-colors duration-300 min-h-screen">
-      
+    <div className="bg-[#161618] text-gray-200 font-sans antialiased min-h-screen selection:bg-[#3b82f6]/30">
       {/* Navigation */}
-      <nav className="fixed w-full z-50 top-0 border-b border-[#E5E5E5] dark:border-[#262626] bg-[#FFFFFF]/80 dark:bg-[#0A0A0A]/80 backdrop-blur-md">
+      <nav className="fixed w-full z-50 top-0 border-b border-[#27272a] bg-[#161618]/80 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-gradient-to-tr from-gray-900 to-gray-600 dark:from-white dark:to-gray-400 rounded-md flex items-center justify-center">
-                <Layers className="text-white dark:text-black w-5 h-5" />
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-[#3b82f6] rounded flex items-center justify-center shadow-[0_0_15px_rgba(59,130,246,0.5)]">
+                <Activity className="text-white w-5 h-5" />
               </div>
-              <span className="font-semibold text-lg tracking-tight">FocusMetrics</span>
+              <span className="font-bold text-lg tracking-tight text-white">
+                Kinetics.io
+              </span>
             </div>
-            
-            <div className="hidden md:flex items-center space-x-8 text-sm font-medium text-[#666666] dark:text-[#A1A1A1]">
-              <a className="hover:text-[#171717] dark:hover:text-[#EDEDED] transition-colors" href="#">Product</a>
-              <a className="hover:text-[#171717] dark:hover:text-[#EDEDED] transition-colors" href="#">Solutions</a>
-              <a className="hover:text-[#171717] dark:hover:text-[#EDEDED] transition-colors" href="#">Enterprise</a>
-              <a className="hover:text-[#171717] dark:hover:text-[#EDEDED] transition-colors" href="#">Pricing</a>
+
+            <div className="hidden md:flex items-center space-x-8 text-xs font-mono text-gray-400 uppercase tracking-widest">
+              <a className="hover:text-blue-400 transition-colors" href="#">
+                Engine
+              </a>
+              <a className="hover:text-blue-400 transition-colors" href="#">
+                Protocol
+              </a>
+              <a className="hover:text-blue-400 transition-colors" href="#">
+                Manifesto
+              </a>
+              <button
+                onClick={() => navigate("/pricing")}
+                className="hover:text-blue-400 transition-colors bg-transparent border-none cursor-pointer"
+              >
+                Pricing
+              </button>
             </div>
 
             <div className="flex items-center gap-4">
-              <a className="text-sm font-medium text-[#666666] dark:text-[#A1A1A1] hover:text-[#171717] dark:hover:text-[#EDEDED] hidden sm:block" href="#">Log in</a>
-              <a className="bg-[#FF4F00] text-white text-sm font-medium px-4 py-2 rounded-md hover:bg-opacity-90 transition-opacity" href="#">Request Demo</a>
+              <a
+                className="text-xs font-mono text-gray-400 hover:text-white hidden sm:block uppercase"
+                href="#"
+              >
+                Log in
+              </a>
+              <button
+                onClick={() => navigate("/create")}
+                className="bg-[#27272a] hover:bg-[#3b82f6] hover:text-white text-gray-300 text-xs font-mono uppercase px-4 py-2 rounded border border-[#3f3f46] hover:border-[#3b82f6] transition-all duration-300"
+              >
+                Init Sequence
+              </button>
             </div>
           </div>
         </div>
@@ -60,111 +77,159 @@ const Landing: React.FC = () => {
 
       <main className="relative pt-32 pb-16 sm:pt-40 sm:pb-24 overflow-hidden">
         {/* Dynamic Grid Background Overlay */}
-        <div 
-          className="absolute inset-0 z-0 bg-[length:40px_40px] opacity-[0.4] pointer-events-none"
-          style={gridOverlayStyle}
-        >
-          <div className="absolute inset-0 dark:hidden" style={{ backgroundImage: gridPatternLight }} />
-          <div className="absolute inset-0 hidden dark:block" style={{ backgroundImage: gridPatternDark }} />
-        </div>
+        <div
+          className="absolute inset-0 z-0 bg-[length:40px_40px] opacity-[0.3] pointer-events-none"
+          style={{
+            backgroundImage: gridPattern,
+            maskImage:
+              "radial-gradient(circle at center, black, transparent 80%)",
+            WebkitMaskImage:
+              "radial-gradient(circle at center, black, transparent 80%)",
+          }}
+        />
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight mb-6 bg-clip-text text-transparent bg-gradient-to-b from-gray-900 via-gray-800 to-gray-500 dark:from-white dark:via-gray-200 dark:to-gray-500 pb-2">
-            See the heat behind<br />every heartbeat of work.
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-blue-500/20 bg-blue-500/5 text-blue-400 text-[10px] font-mono uppercase tracking-widest mb-6 animate-fade-in">
+            <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
+            System V2.0 Online
+          </div>
+
+          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight mb-6 text-transparent bg-clip-text bg-gradient-to-b from-white via-gray-200 to-gray-500 pb-2">
+            The kinetic theory <br />
+            of <span className="text-[#3b82f6]">productivity</span>.
           </h1>
-          <p className="mt-4 text-xl text-[#666666] dark:text-[#A1A1A1] max-w-2xl mx-auto leading-relaxed">
-            Transform raw task completion data into actionable visual heatmaps. 
-            Identify bottlenecks, optimize flow, and empower your teams with precision analytics.
+
+          <p className="mt-4 text-xl text-gray-500 max-w-2xl mx-auto leading-relaxed font-light">
+            Stop guessing where the time goes. Visualize workflow entropy,
+            detect velocity bottlenecks, and optimize your output vectors with
+            precision.
           </p>
 
           <div className="mt-10 flex justify-center gap-4">
-            {/* MODIFIED BUTTON: Changed text and added navigate to /create */}
-            <button 
-              onClick={() => navigate('/create')}
-              className="bg-[#FF4F00] text-white h-12 px-8 rounded-full font-medium hover:scale-105 transition-transform duration-200 shadow-lg shadow-orange-500/20 flex items-center gap-2"
+            <button
+              onClick={() => navigate("/create")}
+              className="bg-[#3b82f6] text-white h-12 px-8 rounded-lg font-medium hover:bg-blue-600 transition-all duration-200 shadow-[0_0_20px_rgba(59,130,246,0.3)] flex items-center gap-2 group"
             >
-              <span>Get Started</span>
-              <ArrowRight className="w-4 h-4" />
+              <span>Start Tracking</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </button>
-            <button className="bg-white dark:bg-[#141414] border border-[#E5E5E5] dark:border-[#262626] text-[#171717] dark:text-[#EDEDED] h-12 px-8 rounded-full font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors flex items-center gap-2">
-              <PlayCircle className="w-4 h-4" />
-              <span>Watch Demo</span>
+            <button className="bg-transparent border border-[#3f3f46] text-gray-300 h-12 px-8 rounded-lg font-medium hover:bg-white/5 transition-colors flex items-center gap-2">
+              <Play className="w-4 h-4" />
+              <span>System Demo</span>
             </button>
           </div>
 
           {/* Visualization Dashboard Component */}
-          <div className="mt-20 relative max-w-5xl mx-auto">
-            <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-2xl blur opacity-20 dark:opacity-30" />
-            <div className="relative bg-[#FFFFFF] dark:bg-[#141414] border border-[#E5E5E5] dark:border-[#262626] rounded-xl shadow-2xl overflow-hidden aspect-[16/9] grid grid-cols-4 grid-rows-3 gap-px bg-[#E5E5E5] dark:bg-[#262626]">
-              
-              <div className="col-span-3 row-span-2 bg-white dark:bg-black p-6 relative group overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 dark:from-indigo-500/10 dark:to-purple-500/10" />
-                <div className="flex justify-between items-center mb-4">
+          <div className="mt-20 relative max-w-5xl mx-auto perspective-[2000px]">
+            {/* Glow effect behind the dashboard */}
+            <div className="absolute -inset-1 bg-gradient-to-r from-blue-600/20 via-indigo-600/20 to-cyan-600/20 rounded-2xl blur-xl opacity-50" />
+
+            <div className="relative bg-[#09090b] border border-[#27272a] rounded-xl shadow-2xl overflow-hidden aspect-[16/9] grid grid-cols-4 grid-rows-3 gap-px bg-[#27272a] rotate-x-12 transform-gpu transition-transform hover:rotate-x-0 duration-700">
+              {/* Main Chart Area */}
+              <div className="col-span-3 row-span-2 bg-[#161618] p-6 relative group overflow-hidden">
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(59,130,246,0.1),transparent_50%)]" />
+                <div className="flex justify-between items-center mb-6">
                   <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                    <span className="text-xs font-mono text-[#666666] dark:text-[#A1A1A1] uppercase tracking-wider">Real-time Velocity</span>
+                    <Activity className="w-4 h-4 text-blue-500" />
+                    <span className="text-xs font-mono text-gray-400 uppercase tracking-wider">
+                      Output Velocity
+                    </span>
                   </div>
-                  <div className="h-6 w-20 bg-gray-100 dark:bg-gray-900 rounded animate-pulse" />
+                  <div className="flex gap-1">
+                    {[1, 2, 3].map((i) => (
+                      <div
+                        key={i}
+                        className="w-1 h-1 rounded-full bg-[#27272a]"
+                      />
+                    ))}
+                  </div>
                 </div>
-                
-                <div className="w-full h-48 flex items-end justify-between gap-1">
-                  <div className="w-full bg-gradient-to-t from-emerald-500/20 to-emerald-400 h-[30%] rounded-t-sm" />
-                  <div className="w-full bg-gradient-to-t from-emerald-500/20 to-emerald-400 h-[50%] rounded-t-sm" />
-                  <div className="w-full bg-gradient-to-t from-emerald-500/20 to-emerald-400 h-[45%] rounded-t-sm" />
-                  <div className="w-full bg-gradient-to-t from-yellow-500/20 to-yellow-400 h-[70%] rounded-t-sm" />
-                  <div className="w-full bg-gradient-to-t from-orange-500/20 to-orange-400 h-[85%] rounded-t-sm" />
-                  <div className="w-full bg-gradient-to-t from-red-500/20 to-red-500 h-[95%] rounded-t-sm relative shadow-[0_0_15px_rgba(239,68,68,0.5)]" />
-                  <div className="w-full bg-gradient-to-t from-orange-500/20 to-orange-400 h-[60%] rounded-t-sm" />
-                  <div className="w-full bg-gradient-to-t from-emerald-500/20 to-emerald-400 h-[40%] rounded-t-sm" />
-                  <div className="w-full bg-gradient-to-t from-emerald-500/20 to-emerald-400 h-[35%] rounded-t-sm" />
+
+                {/* Simulated Heatmap Bars */}
+                <div className="w-full h-40 flex items-end justify-between gap-1">
+                  {[30, 50, 45, 70, 85, 95, 60, 40, 35].map((h, i) => (
+                    <div key={i} className="w-full relative group/bar">
+                      <div
+                        style={{ height: `${h}%` }}
+                        className={`w-full rounded-t-sm transition-all duration-500 ${
+                          h > 80
+                            ? "bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]"
+                            : h > 50
+                            ? "bg-blue-500/60"
+                            : "bg-[#27272a]"
+                        }`}
+                      />
+                    </div>
+                  ))}
                 </div>
-                <div className="mt-4 flex justify-between text-xs font-mono text-[#666666] dark:text-[#A1A1A1]">
-                  <span>09:00</span><span>12:00</span><span>15:00</span><span>18:00</span>
+                <div className="mt-4 flex justify-between text-[10px] font-mono text-gray-600 uppercase">
+                  <span>Mon</span>
+                  <span>Wed</span>
+                  <span>Fri</span>
                 </div>
               </div>
 
-              <div className="col-span-1 row-span-1 bg-white dark:bg-black p-6 flex flex-col justify-between group hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors">
-                <span className="text-xs font-mono text-[#666666] dark:text-[#A1A1A1] uppercase">Efficiency Score</span>
-                <div className="text-3xl font-bold text-[#171717] dark:text-[#EDEDED] mt-2">94.2%</div>
-                <div className="text-xs text-green-500 flex items-center mt-1">
-                  <TrendingUp className="w-4 h-4 mr-1" /> +2.4%
+              {/* Metric Card 1 */}
+              <div className="col-span-1 row-span-1 bg-[#161618] p-6 flex flex-col justify-between hover:bg-[#1c1c1f] transition-colors border-l border-[#27272a]">
+                <span className="text-[10px] font-mono text-gray-500 uppercase">
+                  Efficiency
+                </span>
+                <div className="text-3xl font-bold text-white mt-2 font-mono">
+                  98.2<span className="text-gray-600 text-lg">%</span>
+                </div>
+                <div className="text-[10px] text-blue-400 flex items-center mt-1 font-mono">
+                  ▲ OPTIMIZED
                 </div>
               </div>
 
-              <div className="col-span-1 row-span-1 bg-white dark:bg-black p-6 flex flex-col justify-between group hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors">
-                <span className="text-xs font-mono text-[#666666] dark:text-[#A1A1A1] uppercase">Focus Blocks</span>
-                <div className="text-3xl font-bold text-[#171717] dark:text-[#EDEDED] mt-2">1,240</div>
-                <div className="w-full bg-gray-200 dark:bg-gray-800 h-1 rounded-full mt-2 overflow-hidden">
-                  <div className="bg-[#FF4F00] h-full w-[70%]" />
+              {/* Metric Card 2 */}
+              <div className="col-span-1 row-span-1 bg-[#161618] p-6 flex flex-col justify-between hover:bg-[#1c1c1f] transition-colors border-l border-[#27272a]">
+                <span className="text-[10px] font-mono text-gray-500 uppercase">
+                  Deep Work
+                </span>
+                <div className="text-3xl font-bold text-white mt-2 font-mono">
+                  6.4<span className="text-gray-600 text-lg">h</span>
+                </div>
+                <div className="w-full bg-[#27272a] h-1 rounded-full mt-2 overflow-hidden">
+                  <div className="bg-blue-500 h-full w-[85%] shadow-[0_0_5px_rgba(59,130,246,0.8)]" />
                 </div>
               </div>
 
-              <div className="col-span-2 row-span-1 bg-white dark:bg-black p-6 flex items-center justify-between group hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors">
+              {/* Bottom Wide Card */}
+              <div className="col-span-2 row-span-1 bg-[#161618] p-6 flex items-center justify-between hover:bg-[#1c1c1f] transition-colors">
                 <div className="flex items-center gap-4">
-                  <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg text-purple-600 dark:text-purple-400">
-                    <Brain className="w-6 h-6" />
+                  <div className="p-3 bg-blue-500/10 rounded border border-blue-500/20 text-blue-400">
+                    <Cpu className="w-5 h-5" />
                   </div>
                   <div>
-                    <div className="font-semibold text-[#171717] dark:text-[#EDEDED]">Deep Work Ratio</div>
-                    <div className="text-xs text-[#666666] dark:text-[#A1A1A1]">Sustainable pace maintained</div>
+                    <div className="font-medium text-gray-200 text-sm">
+                      Cognitive Load
+                    </div>
+                    <div className="text-[10px] text-gray-500 font-mono uppercase">
+                      Within sustainable limits
+                    </div>
                   </div>
-                </div>
-                <div className="text-right">
-                  <div className="text-xl font-bold">4.5h</div>
-                  <div className="text-xs text-[#666666] dark:text-[#A1A1A1]">Daily Avg</div>
                 </div>
               </div>
 
-              <div className="col-span-2 row-span-1 bg-white dark:bg-black p-6 relative overflow-hidden group">
-                <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-white dark:from-black to-transparent z-10" />
-                <div className="flex items-center gap-3 mb-2">
-                  <span className="w-2 h-2 rounded-full bg-[#FF4F00]" />
-                  <span className="text-xs font-mono uppercase text-[#666666] dark:text-[#A1A1A1]">Integration Active</span>
+              {/* Terminal Card */}
+              <div className="col-span-2 row-span-1 bg-[#09090b] p-6 relative overflow-hidden">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <span className="text-[10px] font-mono uppercase text-gray-500">
+                    Sync Stream Active
+                  </span>
                 </div>
-                <div className="font-mono text-xs text-[#666666] dark:text-[#A1A1A1] space-y-1 opacity-70">
-                  <p>&gt; fetching_data_stream(source: "jira")</p>
-                  <p>&gt; processing_vectors...</p>
-                  <p className="text-green-500">&gt; visualization_ready</p>
+                <div className="font-mono text-[10px] text-gray-500 space-y-1.5">
+                  <p>
+                    <span className="text-blue-500">➜</span>{" "}
+                    fetching_vectors(source: "local")
+                  </p>
+                  <p>
+                    <span className="text-blue-500">➜</span>{" "}
+                    encrypting_payload...
+                  </p>
+                  <p className="text-emerald-500">➜ sync_complete [12ms]</p>
                 </div>
               </div>
             </div>
@@ -172,88 +237,128 @@ const Landing: React.FC = () => {
         </div>
       </main>
 
-      {/* Feature Analysis Section */}
-      <section className="py-24 bg-[#F7F7F7] dark:bg-[#0A0A0A] relative">
+      {/* Feature Grid */}
+      <section className="py-24 bg-[#161618] relative border-t border-[#27272a]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-16">
-            <h2 className="text-sm font-mono text-[#FF4F00] tracking-wider uppercase mb-2">Granular Visibility</h2>
-            <h3 className="text-3xl sm:text-4xl font-bold text-[#171717] dark:text-[#EDEDED]">Engineered for Data Teams</h3>
+            <h2 className="text-xs font-mono text-blue-500 tracking-widest uppercase mb-3">
+              System Capabilities
+            </h2>
+            <h3 className="text-3xl sm:text-4xl font-bold text-white">
+              Engineered for High-Velocity Output
+            </h3>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[minmax(300px,auto)]">
-            <div className="md:col-span-2 rounded-2xl border border-[#E5E5E5] dark:border-[#262626] bg-[#FFFFFF] dark:bg-[#141414] overflow-hidden relative group">
+            {/* Feature 1: Spectral Heatmaps */}
+            <div className="md:col-span-2 rounded-xl border border-[#27272a] bg-[#1c1c1f] overflow-hidden relative group hover:border-[#3f3f46] transition-colors">
               <div className="p-8 h-full flex flex-col z-10 relative">
                 <div className="mb-auto">
-                  <div className="w-12 h-12 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center mb-6">
-                    <Grid className="text-[#171717] dark:text-[#EDEDED] w-6 h-6" />
+                  <div className="w-10 h-10 rounded bg-[#27272a] flex items-center justify-center mb-6 border border-[#3f3f46]">
+                    <Grid className="text-gray-200 w-5 h-5" />
                   </div>
-                  <h4 className="text-xl font-semibold mb-2 text-[#171717] dark:text-[#EDEDED]">Spectral Heatmaps</h4>
-                  <p className="text-[#666666] dark:text-[#A1A1A1] max-w-md">Visualize workflow intensity with our proprietary spectral gradients. Instantly spot burnout risks and idle resources with color-coded precision.</p>
+                  <h4 className="text-lg font-bold mb-2 text-white">
+                    Temporal Heatmaps
+                  </h4>
+                  <p className="text-gray-400 text-sm max-w-md">
+                    Visualize workflow intensity across time. Identify burnout
+                    risks with color-coded gradients mapped to your activity
+                    output.
+                  </p>
                 </div>
-                <div className="mt-8 w-full h-48 bg-gray-50 dark:bg-black rounded-lg border border-[#E5E5E5] dark:border-[#262626] relative overflow-hidden">
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(255,79,0,0.2),transparent_50%),radial-gradient(circle_at_70%_80%,rgba(59,130,246,0.2),transparent_50%)]" />
-                  <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#FF4F00] to-transparent opacity-50" />
-                  <div className="absolute inset-0 grid grid-cols-6 grid-rows-4 divide-x divide-y divide-gray-200/10 dark:divide-gray-800/50">
-                    {Array.from({ length: 24 }).map((_, i) => <div key={i} />)}
+                {/* Decorative Grid */}
+                <div className="mt-8 w-full h-48 bg-[#09090b] rounded border border-[#27272a] relative overflow-hidden">
+                  {/* Blue Gradient Mesh */}
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.15),transparent_60%)]" />
+                  <div className="absolute inset-0 grid grid-cols-12 grid-rows-4 divide-x divide-y divide-[#27272a]">
+                    {Array.from({ length: 48 }).map((_, i) => (
+                      <div
+                        key={i}
+                        className={`transition-opacity duration-1000 ${
+                          i % 7 === 0 ? "bg-blue-500/20" : ""
+                        }`}
+                      />
+                    ))}
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="rounded-2xl border border-[#E5E5E5] dark:border-[#262626] bg-[#FFFFFF] dark:bg-[#141414] overflow-hidden relative group p-8">
-              <div className="w-12 h-12 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center mb-6">
-                <Network className="text-[#171717] dark:text-[#EDEDED] w-6 h-6" />
+            {/* Feature 2: Cross-Silo */}
+            <div className="rounded-xl border border-[#27272a] bg-[#1c1c1f] overflow-hidden relative group p-8 hover:border-[#3f3f46] transition-colors">
+              <div className="w-10 h-10 rounded bg-[#27272a] flex items-center justify-center mb-6 border border-[#3f3f46]">
+                <Share2 className="text-gray-200 w-5 h-5" />
               </div>
-              <h4 className="text-xl font-semibold mb-2 text-[#171717] dark:text-[#EDEDED]">Cross-Silo Analysis</h4>
-              <p className="text-[#666666] dark:text-[#A1A1A1] text-sm leading-relaxed">Connect Jira, GitHub, and Slack data into a unified productivity layer. Break down the walls between departments.</p>
-              <div className="mt-8 flex -space-x-4 overflow-hidden py-2 pl-2">
-                <div className="w-10 h-10 rounded-full bg-blue-600 border-2 border-white dark:border-black flex items-center justify-center text-white text-xs font-bold">J</div>
-                <div className="w-10 h-10 rounded-full bg-gray-800 border-2 border-white dark:border-black flex items-center justify-center text-white text-xs font-bold">G</div>
-                <div className="w-10 h-10 rounded-full bg-purple-600 border-2 border-white dark:border-black flex items-center justify-center text-white text-xs font-bold">S</div>
-                <div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 border-2 border-white dark:border-black flex items-center justify-center text-gray-500 text-xs font-bold">+5</div>
-              </div>
-            </div>
-
-            <div className="rounded-2xl border border-[#E5E5E5] dark:border-[#262626] bg-[#FFFFFF] dark:bg-[#141414] overflow-hidden relative group p-8">
-              <div className="w-12 h-12 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center mb-6">
-                <Zap className="text-[#171717] dark:text-[#EDEDED] w-6 h-6" />
-              </div>
-              <h4 className="text-xl font-semibold mb-2 text-[#171717] dark:text-[#EDEDED]">Latency Detection</h4>
-              <p className="text-[#666666] dark:text-[#A1A1A1] text-sm leading-relaxed">AI-driven anomaly detection highlights when task completion times deviate from the historic baseline.</p>
-              <div className="mt-6 p-3 bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/30 rounded flex items-center gap-3">
-                <AlertTriangle className="text-red-500 w-4 h-4" />
-                <span className="text-xs text-red-600 dark:text-red-400 font-mono">Anomaly: +450ms lag in deploy pipeline</span>
+              <h4 className="text-lg font-bold mb-2 text-white">
+                Encrypted Sync
+              </h4>
+              <p className="text-gray-400 text-sm leading-relaxed mb-6">
+                Your data is sharded, encrypted, and synced across devices with
+                zero-knowledge architecture.
+              </p>
+              <div className="flex gap-2">
+                <div className="px-3 py-1 rounded bg-[#27272a] border border-[#3f3f46] text-[10px] font-mono text-gray-400">
+                  AES-256
+                </div>
+                <div className="px-3 py-1 rounded bg-[#27272a] border border-[#3f3f46] text-[10px] font-mono text-gray-400">
+                  E2EE
+                </div>
               </div>
             </div>
 
-            <div className="md:col-span-2 rounded-2xl border border-[#E5E5E5] dark:border-[#262626] bg-[#FFFFFF] dark:bg-[#141414] overflow-hidden relative group">
-              <div className="absolute right-0 top-0 bottom-0 w-1/2 bg-gradient-to-l from-gray-50 dark:from-gray-900 to-transparent pointer-events-none" />
+            {/* Feature 3: Latency */}
+            <div className="rounded-xl border border-[#27272a] bg-[#1c1c1f] overflow-hidden relative group p-8 hover:border-[#3f3f46] transition-colors">
+              <div className="w-10 h-10 rounded bg-[#27272a] flex items-center justify-center mb-6 border border-[#3f3f46]">
+                <Zap className="text-gray-200 w-5 h-5" />
+              </div>
+              <h4 className="text-lg font-bold mb-2 text-white">
+                Anomaly Detection
+              </h4>
+              <p className="text-gray-400 text-sm leading-relaxed">
+                Algorithmic detection of productivity dips and variance from
+                your historical baseline.
+              </p>
+              <div className="mt-6 p-3 bg-red-500/5 border border-red-500/20 rounded flex items-center gap-3">
+                <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping" />
+                <span className="text-[10px] text-red-400 font-mono uppercase">
+                  Variance Detected: -14% Output
+                </span>
+              </div>
+            </div>
+
+            {/* Feature 4: Forecasting */}
+            <div className="md:col-span-2 rounded-xl border border-[#27272a] bg-[#1c1c1f] overflow-hidden relative group hover:border-[#3f3f46] transition-colors">
+              <div className="absolute right-0 top-0 bottom-0 w-1/2 bg-gradient-to-l from-[#09090b] to-transparent pointer-events-none" />
               <div className="p-8 h-full flex flex-col md:flex-row items-center gap-8 relative z-10">
                 <div className="flex-1">
-                  <div className="w-12 h-12 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center mb-6">
-                    <LineChart className="text-[#171717] dark:text-[#EDEDED] w-6 h-6" />
+                  <div className="w-10 h-10 rounded bg-[#27272a] flex items-center justify-center mb-6 border border-[#3f3f46]">
+                    <BarChart3 className="text-gray-200 w-5 h-5" />
                   </div>
-                  <h4 className="text-xl font-semibold mb-2 text-[#171717] dark:text-[#EDEDED]">Predictive Forecasting</h4>
-                  <p className="text-[#666666] dark:text-[#A1A1A1]">Use historical heatmaps to predict future bottlenecks before they happen. Our engine simulates thousands of scenarios per second.</p>
-                  <a className="inline-flex items-center mt-6 text-[#FF4F00] font-medium hover:underline" href="#">
-                    Explore Forecasting 
-                    <ArrowRight className="w-4 h-4 ml-1" />
-                  </a>
+                  <h4 className="text-lg font-bold mb-2 text-white">
+                    Predictive Modeling
+                  </h4>
+                  <p className="text-gray-400 text-sm">
+                    Our engine simulates future workflow states based on current
+                    velocity vectors to predict project completion.
+                  </p>
                 </div>
                 <div className="flex-1 w-full">
-                  <div className="bg-white dark:bg-black rounded-lg border border-[#E5E5E5] dark:border-[#262626] p-4 shadow-sm">
-                    <div className="flex justify-between text-xs text-[#666666] dark:text-[#A1A1A1] mb-4">
-                      <span>Projected Output</span>
-                      <span>Q3 2024</span>
+                  <div className="bg-[#09090b] rounded border border-[#27272a] p-4 shadow-inner">
+                    <div className="flex justify-between text-[10px] font-mono text-gray-500 uppercase mb-4">
+                      <span>Projected</span>
+                      <span>Q4 2025</span>
                     </div>
                     <div className="flex items-end gap-2 h-32">
-                      <div className="flex-1 bg-gray-200 dark:bg-gray-800 rounded-t h-[40%]" />
-                      <div className="flex-1 bg-gray-200 dark:bg-gray-800 rounded-t h-[60%]" />
-                      <div className="flex-1 bg-gray-200 dark:bg-gray-800 rounded-t h-[55%]" />
-                      <div className="flex-1 bg-[#FF4F00]/20 rounded-t h-[75%] border-t-2 border-[#FF4F00] border-dashed relative">
-                        <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-[#FF4F00] text-white text-[10px] px-2 py-1 rounded whitespace-nowrap">Predicted</div>
+                      <div className="flex-1 bg-[#27272a] rounded-t-sm h-[40%]" />
+                      <div className="flex-1 bg-[#27272a] rounded-t-sm h-[60%]" />
+                      <div className="flex-1 bg-[#27272a] rounded-t-sm h-[55%]" />
+                      {/* Prediction Bar */}
+                      <div className="flex-1 bg-blue-500/10 rounded-t-sm h-[75%] border-t border-blue-500 border-dashed relative">
+                        <div className="absolute -top-5 left-1/2 -translate-x-1/2 text-blue-500 text-[9px] font-mono">
+                          EST
+                        </div>
                       </div>
-                      <div className="flex-1 bg-[#FF4F00]/20 rounded-t h-[85%] border-t-2 border-[#FF4F00] border-dashed" />
+                      <div className="flex-1 bg-blue-500/10 rounded-t-sm h-[85%] border-t border-blue-500 border-dashed" />
                     </div>
                   </div>
                 </div>
@@ -263,80 +368,74 @@ const Landing: React.FC = () => {
         </div>
       </section>
 
-      {/* Analytics Dashboard Interaction */}
-      <section className="py-24 border-t border-[#E5E5E5] dark:border-[#262626]">
+      {/* Dashboard Preview / Code Block Section */}
+      <section className="py-24 border-t border-[#27272a] bg-[#09090b]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             <div className="lg:col-span-4">
-              <h2 className="text-3xl font-bold mb-6 text-[#171717] dark:text-[#EDEDED]">Built for those who manage scale.</h2>
+              <h2 className="text-3xl font-bold mb-6 text-white">
+                Built for the disciplined.
+              </h2>
               <div className="space-y-4">
-                <button className="w-full text-left p-4 rounded-lg bg-gray-100 dark:bg-gray-800 border-l-4 border-[#FF4F00] transition-all">
-                  <h4 className="font-semibold text-[#171717] dark:text-[#EDEDED]">Productivity Managers</h4>
-                  <p className="text-sm text-[#666666] dark:text-[#A1A1A1] mt-1">Balance workloads and prevent team burnout with visual capacity planning.</p>
+                <button className="w-full text-left p-4 rounded bg-[#161618] border-l-2 border-blue-500 transition-all">
+                  <h4 className="font-bold text-gray-200 text-sm font-mono uppercase">
+                    Developers
+                  </h4>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Integrate with local environments via CLI.
+                  </p>
                 </button>
-                <button className="w-full text-left p-4 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900 border-l-4 border-transparent transition-all opacity-60 hover:opacity-100">
-                  <h4 className="font-semibold text-[#171717] dark:text-[#EDEDED]">Data Science Teams</h4>
-                  <p className="text-sm text-[#666666] dark:text-[#A1A1A1] mt-1">Export raw vector data via API for custom modeling and internal reporting.</p>
+                <button className="w-full text-left p-4 rounded hover:bg-[#161618] border-l-2 border-transparent transition-all opacity-60 hover:opacity-100">
+                  <h4 className="font-bold text-gray-200 text-sm font-mono uppercase">
+                    Product Managers
+                  </h4>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Visualize team entropy and blockers.
+                  </p>
                 </button>
-                <button className="w-full text-left p-4 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900 border-l-4 border-transparent transition-all opacity-60 hover:opacity-100">
-                  <h4 className="font-semibold text-[#171717] dark:text-[#EDEDED]">CTOs &amp; VPs of Engineering</h4>
-                  <p className="text-sm text-[#666666] dark:text-[#A1A1A1] mt-1">High-level dashboards connecting development velocity to business outcomes.</p>
+                <button className="w-full text-left p-4 rounded hover:bg-[#161618] border-l-2 border-transparent transition-all opacity-60 hover:opacity-100">
+                  <h4 className="font-bold text-gray-200 text-sm font-mono uppercase">
+                    Quant Traders
+                  </h4>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Track decision fatigue against market hours.
+                  </p>
                 </button>
               </div>
             </div>
 
             <div className="lg:col-span-8">
-              <div className="h-full bg-[#FFFFFF] dark:bg-[#141414] border border-[#E5E5E5] dark:border-[#262626] rounded-2xl p-8 relative overflow-hidden shadow-2xl">
-                <div className="absolute -right-20 -top-20 w-64 h-64 bg-[#FF4F00]/10 rounded-full blur-3xl pointer-events-none" />
-                <div className="relative z-10">
-                  <div className="flex items-center justify-between mb-8 border-b border-[#E5E5E5] dark:border-[#262626] pb-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700" />
-                      <div className="text-sm font-medium text-[#171717] dark:text-[#EDEDED]">Engineering Team Alpha</div>
-                    </div>
-                    <div className="flex gap-2">
-                      <span className="px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-xs font-mono">Last 30 Days</span>
-                      <span className="px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-xs font-mono">Export CSV</span>
-                    </div>
+              {/* Terminal Code Preview */}
+              <div className="rounded-xl border border-[#27272a] bg-[#000000] p-6 font-mono text-sm relative shadow-2xl">
+                <div className="flex items-center gap-2 mb-4 border-b border-[#27272a] pb-4">
+                  <div className="w-3 h-3 rounded-full bg-red-500/20 border border-red-500/50" />
+                  <div className="w-3 h-3 rounded-full bg-yellow-500/20 border border-yellow-500/50" />
+                  <div className="w-3 h-3 rounded-full bg-green-500/20 border border-green-500/50" />
+                  <div className="ml-auto text-xs text-gray-600">
+                    kinetics-cli — v2.4.0
                   </div>
-
-                  <div className="space-y-6">
-                    <div>
-                      <div className="flex justify-between text-sm mb-2">
-                        <span className="text-[#666666] dark:text-[#A1A1A1]">Burnout Risk Index</span>
-                        <span className="text-red-500 font-bold">High (82%)</span>
-                      </div>
-                      <div className="w-full h-2 bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden">
-                        <div className="h-full bg-gradient-to-r from-green-400 via-yellow-400 to-red-500 w-[82%]" />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="p-4 bg-gray-50 dark:bg-black rounded-lg border border-[#E5E5E5] dark:border-[#262626]">
-                        <div className="text-xs text-[#666666] dark:text-[#A1A1A1] uppercase mb-1">Avg Task Cycle Time</div>
-                        <div className="text-2xl font-bold text-[#171717] dark:text-[#EDEDED]">4.2 Days</div>
-                        <div className="text-xs text-green-500 mt-1">-12% vs last month</div>
-                      </div>
-                      <div className="p-4 bg-gray-50 dark:bg-black rounded-lg border border-[#E5E5E5] dark:border-[#262626]">
-                        <div className="text-xs text-[#666666] dark:text-[#A1A1A1] uppercase mb-1">Context Switching Costs</div>
-                        <div className="text-2xl font-bold text-[#171717] dark:text-[#EDEDED]">$12,400</div>
-                        <div className="text-xs text-red-500 mt-1">+5% vs last month</div>
-                      </div>
-                    </div>
-
-                    <div className="pt-4 space-y-2">
-                      <div className="text-xs text-[#666666] dark:text-[#A1A1A1]">Workload Distribution</div>
-                      <div className="grid grid-cols-12 gap-1 h-8">
-                        {['10','20','40','60','80','','90','50','30','20','10','5'].map((op, idx) => (
-                          <div key={idx} className={`bg-[#FF4F00]${op ? '/'+op : ''} rounded-sm`} />
-                        ))}
-                      </div>
-                      <div className="grid grid-cols-12 gap-1 h-8">
-                        {['5','10','20','30','40','60','50','30','20','10','5','0'].map((op, idx) => (
-                          <div key={idx} className={`bg-[#FF4F00]${op === '0' ? '/0' : '/'+op} rounded-sm`} />
-                        ))}
-                      </div>
-                    </div>
+                </div>
+                <div className="space-y-2 text-gray-400">
+                  <p>$ kinetics analyze --range=ytd --output=json</p>
+                  <p className="text-blue-500">
+                    ➜ Initializing Analysis Engine...
+                  </p>
+                  <p>➜ Loading 14,204 vectors from local_db</p>
+                  <p>➜ Calculating velocity...</p>
+                  <br />
+                  <p className="text-emerald-500">✔ REPORT GENERATED [0.4s]</p>
+                  <div className="pl-4 border-l border-[#27272a] text-xs space-y-1 mt-2">
+                    <p>
+                      Total_Focus: <span className="text-white">1,240h</span>
+                    </p>
+                    <p>
+                      Peak_Flow:{" "}
+                      <span className="text-white">09:00 - 11:30</span>
+                    </p>
+                    <p>
+                      Efficiency_Score:{" "}
+                      <span className="text-blue-400">98.4/100</span>
+                    </p>
                   </div>
                 </div>
               </div>
@@ -346,102 +445,148 @@ const Landing: React.FC = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[#FFFFFF] dark:bg-[#141414]">
-          <div className="absolute inset-0 bg-[length:32px_32px] opacity-[0.2]" style={{ backgroundImage: gridPatternLight }} />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#FF4F00]/20 blur-[120px] rounded-full pointer-events-none" />
-        </div>
-        
+      <section className="py-24 relative overflow-hidden bg-[#161618]">
+        <div
+          className="absolute inset-0 bg-[length:32px_32px] opacity-[0.1]"
+          style={{ backgroundImage: gridPattern }}
+        />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-500/10 blur-[120px] rounded-full pointer-events-none" />
+
         <div className="relative z-10 max-w-4xl mx-auto text-center px-4">
-          <h2 className="text-4xl sm:text-5xl font-bold tracking-tight mb-6 text-[#171717] dark:text-[#EDEDED]">Ready to optimize your flow?</h2>
-          <p className="text-xl text-[#666666] dark:text-[#A1A1A1] mb-10">
-            Join forward-thinking teams using FocusMetrics to visualize their productivity DNA.
+          <h2 className="text-4xl sm:text-5xl font-bold tracking-tight mb-6 text-white">
+            Optimize your flow state.
+          </h2>
+          <p className="text-lg text-gray-500 mb-10 max-w-lg mx-auto">
+            Join the network of high-performance individuals visualizing their
+            productivity DNA.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <button className="bg-[#FF4F00] text-white h-14 px-8 rounded-full font-medium text-lg hover:shadow-lg hover:shadow-[#FF4F00]/40 transition-all">
-              Request a Demo
+            <button className="bg-white text-black h-14 px-8 rounded-lg font-bold text-sm uppercase tracking-wide hover:bg-gray-200 transition-all">
+              Initialize Free Tier
             </button>
-            <button className="bg-transparent border border-[#E5E5E5] dark:border-[#262626] text-[#171717] dark:text-[#EDEDED] h-14 px-8 rounded-full font-medium text-lg hover:bg-[#FFFFFF] dark:hover:bg-white/5 transition-all">
-              Contact Sales
+            <button className="bg-transparent border border-[#27272a] text-gray-300 h-14 px-8 rounded-lg font-bold text-sm uppercase tracking-wide hover:bg-[#27272a] transition-all">
+              Read Documentation
             </button>
           </div>
 
-          <div className="mt-12 pt-12 border-t border-[#E5E5E5] dark:border-[#262626] grid grid-cols-2 md:grid-cols-4 gap-8">
+          <div className="mt-16 pt-12 border-t border-[#27272a] grid grid-cols-2 md:grid-cols-4 gap-8">
             <div className="text-center">
-              <div className="text-3xl font-bold text-[#171717] dark:text-[#EDEDED]">10k+</div>
-              <div className="text-sm text-[#666666] dark:text-[#A1A1A1] mt-1">Teams Analyzed</div>
+              <div className="text-3xl font-bold text-white font-mono">1B+</div>
+              <div className="text-[10px] text-gray-500 mt-1 uppercase tracking-widest">
+                Vectors Processed
+              </div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-[#171717] dark:text-[#EDEDED]">2.5M</div>
-              <div className="text-sm text-[#666666] dark:text-[#A1A1A1] mt-1">Tasks Tracked</div>
+              <div className="text-3xl font-bold text-white font-mono">0ms</div>
+              <div className="text-[10px] text-gray-500 mt-1 uppercase tracking-widest">
+                Local Latency
+              </div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-[#171717] dark:text-[#EDEDED]">24%</div>
-              <div className="text-sm text-[#666666] dark:text-[#A1A1A1] mt-1">Avg Efficiency Gain</div>
+              <div className="text-3xl font-bold text-white font-mono">42%</div>
+              <div className="text-[10px] text-gray-500 mt-1 uppercase tracking-widest">
+                Efficiency Gain
+              </div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-[#171717] dark:text-[#EDEDED]">99.9%</div>
-              <div className="text-sm text-[#666666] dark:text-[#A1A1A1] mt-1">Uptime SLA</div>
+              <div className="text-3xl font-bold text-white font-mono">
+                100%
+              </div>
+              <div className="text-[10px] text-gray-500 mt-1 uppercase tracking-widest">
+                Data Ownership
+              </div>
             </div>
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-[#F7F7F7] dark:bg-[#0A0A0A] border-t border-[#E5E5E5] dark:border-[#262626] py-12 text-sm">
+      <footer className="bg-[#09090b] border-t border-[#27272a] py-12 text-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
             <div>
               <div className="flex items-center gap-2 mb-4">
-                <div className="w-6 h-6 bg-gray-900 dark:bg-white rounded-sm flex items-center justify-center">
-                  <Layers className="text-white dark:text-black w-3 h-3" />
+                <div className="w-6 h-6 bg-blue-600 rounded flex items-center justify-center">
+                  <Activity className="text-white w-3 h-3" />
                 </div>
-                <span className="font-bold text-[#171717] dark:text-[#EDEDED]">FocusMetrics</span>
+                <span className="font-bold text-gray-200">Kinetics.io</span>
               </div>
-              <p className="text-[#666666] dark:text-[#A1A1A1]">
-                San Francisco, CA<br />
-                © 2024 FocusMetrics Inc.
+              <p className="text-gray-500 text-xs">
+                Quantifying the invisible.
+                <br />© 2025 Kinetics Inc.
               </p>
             </div>
             <div>
-              <h4 className="font-semibold text-[#171717] dark:text-[#EDEDED] mb-4">Product</h4>
-              <ul className="space-y-2 text-[#666666] dark:text-[#A1A1A1]">
-                <li><a className="hover:text-[#FF4F00] transition-colors" href="#">Features</a></li>
-                <li><a className="hover:text-[#FF4F00] transition-colors" href="#">Integrations</a></li>
-                <li><a className="hover:text-[#FF4F00] transition-colors" href="#">Enterprise</a></li>
-                <li><a className="hover:text-[#FF4F00] transition-colors" href="#">Changelog</a></li>
+              <h4 className="font-bold text-gray-200 mb-4 text-xs uppercase tracking-widest">
+                Platform
+              </h4>
+              <ul className="space-y-2 text-gray-500 text-xs font-mono">
+                <li>
+                  <a className="hover:text-blue-500 transition-colors" href="#">
+                    Core Engine
+                  </a>
+                </li>
+                <li>
+                  <a className="hover:text-blue-500 transition-colors" href="#">
+                    API Access
+                  </a>
+                </li>
+                <li>
+                  <a className="hover:text-blue-500 transition-colors" href="#">
+                    Status
+                  </a>
+                </li>
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold text-[#171717] dark:text-[#EDEDED] mb-4">Resources</h4>
-              <ul className="space-y-2 text-[#666666] dark:text-[#A1A1A1]">
-                <li><a className="hover:text-[#FF4F00] transition-colors" href="#">Documentation</a></li>
-                <li><a className="hover:text-[#FF4F00] transition-colors" href="#">API Reference</a></li>
-                <li><a className="hover:text-[#FF4F00] transition-colors" href="#">Blog</a></li>
-                <li><a className="hover:text-[#FF4F00] transition-colors" href="#">Community</a></li>
+              <h4 className="font-bold text-gray-200 mb-4 text-xs uppercase tracking-widest">
+                Resources
+              </h4>
+              <ul className="space-y-2 text-gray-500 text-xs font-mono">
+                <li>
+                  <a className="hover:text-blue-500 transition-colors" href="#">
+                    Documentation
+                  </a>
+                </li>
+                <li>
+                  <a className="hover:text-blue-500 transition-colors" href="#">
+                    Manifesto
+                  </a>
+                </li>
+                <li>
+                  <a className="hover:text-blue-500 transition-colors" href="#">
+                    Changelog
+                  </a>
+                </li>
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold text-[#171717] dark:text-[#EDEDED] mb-4">Legal</h4>
-              <ul className="space-y-2 text-[#666666] dark:text-[#A1A1A1]">
-                <li><a className="hover:text-[#FF4F00] transition-colors" href="#">Privacy Policy</a></li>
-                <li><a className="hover:text-[#FF4F00] transition-colors" href="#">Terms of Service</a></li>
-                <li><a className="hover:text-[#FF4F00] transition-colors" href="#">Security</a></li>
+              <h4 className="font-bold text-gray-200 mb-4 text-xs uppercase tracking-widest">
+                Legal
+              </h4>
+              <ul className="space-y-2 text-gray-500 text-xs font-mono">
+                <li>
+                  <a className="hover:text-blue-500 transition-colors" href="#">
+                    Privacy
+                  </a>
+                </li>
+                <li>
+                  <a className="hover:text-blue-500 transition-colors" href="#">
+                    Terms
+                  </a>
+                </li>
               </ul>
             </div>
           </div>
-          <div className="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-[#E5E5E5] dark:border-[#262626]">
-            <div className="flex gap-4">
-              <a className="text-[#666666] dark:text-[#A1A1A1] hover:text-[#FF4F00] transition-colors" href="#">
-                <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"></path></svg>
-              </a>
-              <a className="text-[#666666] dark:text-[#A1A1A1] hover:text-[#FF4F00] transition-colors" href="#">
-                <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path></svg>
-              </a>
+          <div className="flex items-center justify-between pt-8 border-t border-[#27272a]">
+            <div className="flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+              <span className="text-gray-500 text-[10px] font-mono uppercase">
+                All Systems Operational
+              </span>
             </div>
-            <div className="flex items-center gap-2 mt-4 md:mt-0">
-              <span className="w-2 h-2 rounded-full bg-green-500" />
-              <span className="text-[#666666] dark:text-[#A1A1A1] text-xs">All Systems Operational</span>
+            <div className="text-gray-600 text-[10px] font-mono">
+              v2.4.0-stable
             </div>
           </div>
         </div>
