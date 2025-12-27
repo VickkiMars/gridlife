@@ -1,7 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  Layers,
   ArrowRight,
   Play,
   Activity,
@@ -9,7 +8,6 @@ import {
   Grid,
   Share2,
   Zap,
-  Terminal,
   BarChart3,
 } from "lucide-react";
 
