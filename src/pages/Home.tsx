@@ -117,7 +117,7 @@ const Home: React.FC = () => {
             <Activity size={20} />
           </div>
           <div>
-            <h1 className="text-xl font-bold tracking-tight">Kinetics.io</h1>
+            <h1 className="text-xl font-bold tracking-tight">Gridlife.io</h1>
             <p className="text-xs text-gray-500 font-mono">
               Productivity Visualization Engine
             </p>

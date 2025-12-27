@@ -17,7 +17,7 @@ const Pricing: React.FC = () => {
           Price of <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-500">Productivity</span>
         </h1>
         <p className="text-gray-500 text-lg">
-          Kinetics is free to use forever locally. Upgrade for cloud synchronization, 
+          Gridlife is free to use forever locally. Upgrade for cloud synchronization, 
           unlimited history, and advanced outlier analytics.
         </p>
       </div>
@@ -93,7 +93,7 @@ const Pricing: React.FC = () => {
 
           <div className="mb-8">
             <div className="flex items-center justify-between mb-2">
-              <h3 className="text-lg font-medium text-white">Kinetics Pro</h3>
+              <h3 className="text-lg font-medium text-white">Gridlife Pro</h3>
               <Zap size={20} className="text-blue-400 fill-blue-400/20" />
             </div>
             <p className="text-sm text-gray-400 h-10">For those obsessed with optimization and data longevity.</p>
