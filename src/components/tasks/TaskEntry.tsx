@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Check, Trash2 } from 'lucide-react'; // Import Lucide icons
+import { Check, Trash2 } from 'lucide-react'; 
 import { COLORS, type Task } from '../../types';
 
 interface Props {
@@ -10,23 +10,22 @@ interface Props {
   burnoutRiskPercent?: number;
 }
 
+// Local interface for strict typing without 'any'
+type ExtendedTask = Omit<Task, 'impact_weight'> & {
+  category_id?: string;
+  impact_weight?: number;
+};
+
 export const TaskEntry: React.FC<Props> = ({ tasks, onToggle, onAddTask, onDelete, burnoutRiskPercent = 0 }) => {
   const [isAdding, setIsAdding] = useState(false);
   const [newTitle, setNewTitle] = useState('');
-  const [newTag, setNewTag] = useState('');
+  // Removed unused 'newTag' state to simplify. We will use Category as the tag.
   const [newCategory, setNewCategory] = useState('General');
-  const [newWeight, setNewWeight] = useState(3); // Default weight
+  const [newWeight, setNewWeight] = useState(3); 
 
-  const tagExplanations: Record<string, string> = {
-    'WRK': 'Work',
-    'PERS': 'Personal',
-    'URG': 'Urgent',
-    'DEV': 'Development',
-    'OPS': 'Operations'
-  };
-
+  // Derived list of existing categories for auto-complete
   const existingCategories = useMemo(() => {
-    return Array.from(new Set(tasks.map((t) => (t as any).category_id || 'General')));
+    return Array.from(new Set(tasks.map((t) => (t as unknown as ExtendedTask).category_id || 'General')));
   }, [tasks]);
 
   const handleSave = () => {
@@ -35,19 +34,26 @@ export const TaskEntry: React.FC<Props> = ({ tasks, onToggle, onAddTask, onDelet
       return;
     }
 
-    const newTask: Task = {
+    // Safely cast to Task (depending on your global Task definition, 
+    // you might need to ensure impact_weight is mandatory there or handle the mismatch).
+    // Here we assume the global type expects numbers, so we provide them.
+    const newTask = {
       id: (tasks.length + 1).toString().padStart(3, '0'),
       title: newTitle.trim(),
-      tag: newTag.trim().toUpperCase() || 'WRK',
+      tag: newCategory.substring(0, 3).toUpperCase(), // Auto-generate legacy tag from category
       completed: false,
       date: new Date(),
-      weight: newWeight,
+      created_at: new Date(),
+      completed_at: undefined,
+      impact_weight: newWeight,
+      status: 'open',
       category_id: newCategory.trim() || 'General',
-    };
+    } as unknown as Task; 
+    // Double cast used because local 'ExtendedTask' shape might slightly differ 
+    // if 'Task' has stricter rules in your 'types.ts'.
 
     onAddTask(newTask);
     setNewTitle('');
-    setNewTag('');
     setNewCategory('General');
     setNewWeight(3);
     setIsAdding(false);
@@ -89,7 +95,7 @@ export const TaskEntry: React.FC<Props> = ({ tasks, onToggle, onAddTask, onDelet
               onKeyDown={(e) => e.key === 'Enter' && handleSave()}
             />
           </div>
-          {/* Weight Slider - Mobile Optimized */}
+          {/* Weight Slider */}
           <div className="col-span-2 flex flex-col items-center justify-center gap-1">
             <input
               type="range"
@@ -111,7 +117,6 @@ export const TaskEntry: React.FC<Props> = ({ tasks, onToggle, onAddTask, onDelet
               placeholder="Category"
               value={newCategory}
               onChange={(e) => setNewCategory(e.target.value)}
-              required
             />
             <datalist id="task-categories">
               {existingCategories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
@@ -124,89 +129,95 @@ export const TaskEntry: React.FC<Props> = ({ tasks, onToggle, onAddTask, onDelet
       )}
 
       {/* Task Rows */}
-      <div className="max-h-[500px] overflow-y-auto no-scrollbar">
-        {tasks.map((task, idx) => (
-          <div 
-            key={task.id} 
-            className="grid grid-cols-10 sm:grid-cols-12 px-3 sm:px-6 py-3 sm:py-4 items-center transition-colors group relative border-b last:border-b-0 hover:bg-white/5 gap-1"
-            style={{ borderColor: COLORS.border }}
-          >
-            {/* Round Checkbox Column */}
-            <div className="col-span-1 flex justify-center z-10">
-              <div 
-                onClick={() => onToggle(task.id)}
-                className={`
-                  w-5 h-5 rounded-full border flex items-center justify-center cursor-pointer transition-all duration-200
-                  ${task.completed 
-                    ? 'bg-blue-500 border-blue-500' 
-                    : 'border-zinc-600 hover:border-blue-400 bg-transparent'
-                  }
-                `}
-              >
-                {task.completed && (
-                  <Check size={12} strokeWidth={4} className="text-white" />
-                )}
-              </div>
-            </div>
-            
-            <div className="hidden sm:block sm:col-span-1 text-center font-mono text-xs" style={{ color: task.completed ? '#4b5563' : COLORS.primary }}>
-              {String(idx + 1).padStart(3, '0')}
-            </div>
-            
-            <div className="col-span-6 sm:col-span-6 cursor-pointer px-1" onClick={() => onToggle(task.id)}>
-              <span className={`text-xs sm:text-sm transition-all ${task.completed ? 'text-gray-500 line-through opacity-60' : 'text-gray-100 font-medium'}`}>
-                {task.title}
-              </span>
-            </div>
-
-            {/* Weight Display - Mobile Optimized */}
-            <div className="col-span-2 flex justify-center">
-              <div className="flex items-center gap-1">
-                <div className="w-12 h-1.5 bg-gray-700 rounded-full overflow-hidden">
-                  <div 
-                    className="h-full bg-green-500 transition-all"
-                    style={{ width: `${(task.weight / 10) * 100}%` }}
-                  />
+      <div className="max-h-[500px] overflow-y-auto custom-scrollbar">
+        {tasks.map((task, idx) => {
+          // Cast purely for local property access
+          const extTask = task as unknown as ExtendedTask;
+          
+          return (
+            <div 
+              key={task.id} 
+              className="grid grid-cols-10 sm:grid-cols-12 px-3 sm:px-6 py-3 sm:py-4 items-center transition-colors group relative border-b last:border-b-0 hover:bg-white/5 gap-1"
+              style={{ borderColor: COLORS.border }}
+            >
+              {/* Round Checkbox Column */}
+              <div className="col-span-1 flex justify-center z-10">
+                <div 
+                  onClick={() => onToggle(task.id)}
+                  className={`
+                    w-5 h-5 rounded-full border flex items-center justify-center cursor-pointer transition-all duration-200
+                    ${task.completed 
+                      ? 'bg-blue-500 border-blue-500' 
+                      : 'border-zinc-600 hover:border-blue-400 bg-transparent'
+                    }
+                  `}
+                >
+                  {task.completed && (
+                    <Check size={12} strokeWidth={4} className="text-white" />
+                  )}
                 </div>
-                <span className="text-xs font-mono font-semibold text-gray-300 w-4 text-center">{task.weight}</span>
+              </div>
+              
+              <div className="hidden sm:block sm:col-span-1 text-center font-mono text-xs" style={{ color: task.completed ? '#4b5563' : COLORS.primary }}>
+                {String(idx + 1).padStart(3, '0')}
+              </div>
+              
+              <div className="col-span-6 sm:col-span-6 cursor-pointer px-1" onClick={() => onToggle(task.id)}>
+                <span className={`text-xs sm:text-sm transition-all ${task.completed ? 'text-gray-500 line-through opacity-60' : 'text-gray-100 font-medium'}`}>
+                  {task.title}
+                </span>
+              </div>
+
+              {/* Weight Display */}
+              <div className="col-span-2 flex justify-center">
+                <div className="flex items-center gap-1">
+                  <div className="w-12 h-1.5 bg-gray-700 rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-green-500 transition-all"
+                      style={{ width: `${((extTask.impact_weight || 0) / 5) * 100}%` }}
+                    />
+                  </div>
+                  <span className="text-xs font-mono font-semibold text-gray-300 w-4 text-center">{extTask.impact_weight}</span>
+                </div>
+              </div>
+
+              {/* Tag + Delete Column */}
+              <div className="col-span-1 flex justify-center items-center relative gap-1">
+                <span className="px-1 sm:px-2 py-1 rounded text-[10px] font-mono border group-hover:mr-4 sm:group-hover:mr-6 transition-all duration-200 flex-shrink-0 truncate max-w-[60px]"
+                  style={{ 
+                    backgroundColor: task.completed ? 'transparent' : 'rgba(59, 130, 246, 0.1)',
+                    color: task.completed ? '#4b5563' : '#93c5fd',
+                    borderColor: task.completed ? COLORS.border : 'rgba(59, 130, 246, 0.3)'
+                  }}
+                  title={extTask.category_id || task.tag || 'WRK'}
+                >
+                  {extTask.category_id || task.tag || 'WRK'}
+                </span>
+
+                {/* Delete Button */}
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDelete(task.id);
+                  }}
+                  className="absolute right-2 sm:right-0 opacity-0 group-hover:opacity-100 transition-opacity p-1 text-gray-500 hover:text-red-400 hover:bg-red-400/10 rounded-full flex-shrink-0"
+                  title="Delete task"
+                >
+                  <Trash2 size={14} />
+                </button>
               </div>
             </div>
-
-            {/* Tag + Delete Column */}
-            <div className="col-span-1 flex justify-center items-center relative gap-1">
-              <span className="px-1 sm:px-2 py-1 rounded text-[10px] font-mono border group-hover:mr-4 sm:group-hover:mr-6 transition-all duration-200 flex-shrink-0"
-                style={{ 
-                  backgroundColor: task.completed ? 'transparent' : 'rgba(59, 130, 246, 0.1)',
-                  color: task.completed ? '#4b5563' : '#93c5fd',
-                  borderColor: task.completed ? COLORS.border : 'rgba(59, 130, 246, 0.3)'
-                }}
-              >
-                {(task as any).category_id || task.tag || 'WRK'}
-              </span>
-
-              {/* Delete Button - Appears on Hover */}
-              <button 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onDelete(task.id);
-                }}
-                className="absolute right-2 sm:right-0 opacity-0 group-hover:opacity-100 transition-opacity p-1 text-gray-500 hover:text-red-400 hover:bg-red-400/10 rounded-full flex-shrink-0"
-                title="Delete task"
-              >
-                <Trash2 size={14} />
-              </button>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       { (burnoutRiskPercent ?? 0) >= 80 ? (
         <div className="px-3 sm:px-6 py-4 flex items-center justify-center gap-3 border-t" style={{ borderColor: COLORS.border }}>
           <button
-            onClick={() => alert('Schedule rest flow (placeholder)')}
-            className="w-full bg-blue-800 hover:bg-blue-700 text-white py-2 rounded-lg font-semibold"
+            onClick={() => alert('Rest flow triggered: This would disable adding new tasks for 24h in a real app.')}
+            className="w-full bg-blue-800 hover:bg-blue-700 text-white py-2 rounded-lg font-semibold animate-pulse"
           >
-            Schedule Rest
+            ⚠️ High Burnout Risk: Schedule Rest
           </button>
         </div>
       ) : (

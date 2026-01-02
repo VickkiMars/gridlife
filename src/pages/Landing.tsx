@@ -4,10 +4,9 @@ import {
   ArrowRight,
   Play,
   Activity,
-  Cpu,
+  Users,
   Grid,
-  Share2,
-  Zap,
+  ShieldAlert,
   BarChart3,
 } from "lucide-react";
 
@@ -38,15 +37,30 @@ const Landing: React.FC = () => {
             </div>
 
             <div className="hidden md:flex items-center space-x-8 text-xs font-mono text-gray-400 uppercase tracking-widest">
-              <a className="hover:text-blue-400 transition-colors" href="#">
-                Engine
-              </a>
-              <a className="hover:text-blue-400 transition-colors" href="#">
-                Protocol
-              </a>
-              <a className="hover:text-blue-400 transition-colors" href="#">
-                Manifesto
-              </a>
+              <button
+                onClick={() => navigate("/create")}
+                className="hover:text-blue-400 transition-colors bg-transparent border-none cursor-pointer"
+              >
+                The Grid
+              </button>
+              <button
+                onClick={() => navigate("/squads")}
+                className="hover:text-blue-400 transition-colors bg-transparent border-none cursor-pointer"
+              >
+                Squads
+              </button>
+              <button
+                onClick={() => navigate("/methodica")}
+                className="hover:text-blue-400 transition-colors bg-transparent border-none cursor-pointer"
+              >
+                Method
+              </button>
+              <button
+                onClick={() => navigate("/integrations")}
+                className="hover:text-blue-400 transition-colors bg-transparent border-none cursor-pointer"
+              >
+                Integrations
+              </button>
               <button
                 onClick={() => navigate("/pricing")}
                 className="hover:text-blue-400 transition-colors bg-transparent border-none cursor-pointer"
@@ -66,7 +80,7 @@ const Landing: React.FC = () => {
                 onClick={() => navigate("/create")}
                 className="bg-[#27272a] hover:bg-[#3b82f6] hover:text-white text-gray-300 text-xs font-mono uppercase px-4 py-2 rounded border border-[#3f3f46] hover:border-[#3b82f6] transition-all duration-300"
               >
-                Init Sequence
+                Initialize Grid
               </button>
             </div>
           </div>
@@ -89,18 +103,18 @@ const Landing: React.FC = () => {
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-blue-500/20 bg-blue-500/5 text-blue-400 text-[10px] font-mono uppercase tracking-widest mb-6 animate-fade-in">
             <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
-            System V2.0 Online
+            System V2.4 Active
           </div>
 
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight mb-6 text-transparent bg-clip-text bg-gradient-to-b from-white via-gray-200 to-gray-500 pb-2">
-            The kinetic theory <br />
-            of <span className="text-[#3b82f6]">productivity</span>.
+            Visual proof of <br />
+            your <span className="text-[#3b82f6]">consistency</span>.
           </h1>
 
           <p className="mt-4 text-xl text-gray-500 max-w-2xl mx-auto leading-relaxed font-light">
-            Stop guessing where the time goes. Visualize workflow entropy,
-            detect velocity bottlenecks, and optimize your output vectors with
-            precision.
+            Don't just list tasks. Visualize your effort, detect burnout
+            patterns, and lock in your daily output with squad-based
+            accountability.
           </p>
 
           <div className="mt-10 flex justify-center gap-4">
@@ -108,12 +122,12 @@ const Landing: React.FC = () => {
               onClick={() => navigate("/create")}
               className="bg-[#3b82f6] text-white h-12 px-8 rounded-lg font-medium hover:bg-blue-600 transition-all duration-200 shadow-[0_0_20px_rgba(59,130,246,0.3)] flex items-center gap-2 group"
             >
-              <span>Start Tracking</span>
+              <span>Build Your Grid</span>
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </button>
             <button className="bg-transparent border border-[#3f3f46] text-gray-300 h-12 px-8 rounded-lg font-medium hover:bg-white/5 transition-colors flex items-center gap-2">
               <Play className="w-4 h-4" />
-              <span>System Demo</span>
+              <span>See the Method</span>
             </button>
           </div>
 
@@ -130,7 +144,7 @@ const Landing: React.FC = () => {
                   <div className="flex items-center gap-2">
                     <Activity className="w-4 h-4 text-blue-500" />
                     <span className="text-xs font-mono text-gray-400 uppercase tracking-wider">
-                      Output Velocity
+                      Execution Volume
                     </span>
                   </div>
                   <div className="flex gap-1">
@@ -170,26 +184,26 @@ const Landing: React.FC = () => {
               {/* Metric Card 1 */}
               <div className="col-span-1 row-span-1 bg-[#161618] p-6 flex flex-col justify-between hover:bg-[#1c1c1f] transition-colors border-l border-[#27272a]">
                 <span className="text-[10px] font-mono text-gray-500 uppercase">
-                  Efficiency
+                  Integrity Score
                 </span>
                 <div className="text-3xl font-bold text-white mt-2 font-mono">
                   98.2<span className="text-gray-600 text-lg">%</span>
                 </div>
                 <div className="text-[10px] text-blue-400 flex items-center mt-1 font-mono">
-                  ▲ OPTIMIZED
+                  ▲ HIGH DISCIPLINE
                 </div>
               </div>
 
               {/* Metric Card 2 */}
               <div className="col-span-1 row-span-1 bg-[#161618] p-6 flex flex-col justify-between hover:bg-[#1c1c1f] transition-colors border-l border-[#27272a]">
                 <span className="text-[10px] font-mono text-gray-500 uppercase">
-                  Deep Work
+                  Burnout Risk
                 </span>
                 <div className="text-3xl font-bold text-white mt-2 font-mono">
-                  6.4<span className="text-gray-600 text-lg">h</span>
+                  12<span className="text-gray-600 text-lg">%</span>
                 </div>
                 <div className="w-full bg-[#27272a] h-1 rounded-full mt-2 overflow-hidden">
-                  <div className="bg-blue-500 h-full w-[85%] shadow-[0_0_5px_rgba(59,130,246,0.8)]" />
+                  <div className="bg-emerald-500 h-full w-[12%] shadow-[0_0_5px_rgba(16,185,129,0.8)]" />
                 </div>
               </div>
 
@@ -197,14 +211,14 @@ const Landing: React.FC = () => {
               <div className="col-span-2 row-span-1 bg-[#161618] p-6 flex items-center justify-between hover:bg-[#1c1c1f] transition-colors">
                 <div className="flex items-center gap-4">
                   <div className="p-3 bg-blue-500/10 rounded border border-blue-500/20 text-blue-400">
-                    <Cpu className="w-5 h-5" />
+                    <Users className="w-5 h-5" />
                   </div>
                   <div>
                     <div className="font-medium text-gray-200 text-sm">
-                      Cognitive Load
+                      Squad Status
                     </div>
                     <div className="text-[10px] text-gray-500 font-mono uppercase">
-                      Within sustainable limits
+                      4/5 Members Active • 0 Slots Missing
                     </div>
                   </div>
                 </div>
@@ -215,19 +229,21 @@ const Landing: React.FC = () => {
                 <div className="flex items-center gap-2 mb-3">
                   <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                   <span className="text-[10px] font-mono uppercase text-gray-500">
-                    Sync Stream Active
+                    System Log
                   </span>
                 </div>
                 <div className="font-mono text-[10px] text-gray-500 space-y-1.5">
                   <p>
                     <span className="text-blue-500">➜</span>{" "}
-                    fetching_vectors(source: "local")
+                    calculating_streak(days: 42)
                   </p>
                   <p>
                     <span className="text-blue-500">➜</span>{" "}
-                    encrypting_payload...
+                    syncing_squad_state...
                   </p>
-                  <p className="text-emerald-500">➜ sync_complete [12ms]</p>
+                  <p className="text-emerald-500">
+                    ➜ all_systems_nominal [12ms]
+                  </p>
                 </div>
               </div>
             </div>
@@ -240,7 +256,7 @@ const Landing: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-16">
             <h2 className="text-xs font-mono text-blue-500 tracking-widest uppercase mb-3">
-              System Capabilities
+              Capabilities
             </h2>
             <h3 className="text-3xl sm:text-4xl font-bold text-white">
               Engineered for High-Velocity Output
@@ -248,7 +264,7 @@ const Landing: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[minmax(300px,auto)]">
-            {/* Feature 1: Spectral Heatmaps */}
+            {/* Feature 1: Temporal Heatmaps */}
             <div className="md:col-span-2 rounded-xl border border-[#27272a] bg-[#1c1c1f] overflow-hidden relative group hover:border-[#3f3f46] transition-colors">
               <div className="p-8 h-full flex flex-col z-10 relative">
                 <div className="mb-auto">
@@ -259,9 +275,9 @@ const Landing: React.FC = () => {
                     Temporal Heatmaps
                   </h4>
                   <p className="text-gray-400 text-sm max-w-md">
-                    Visualize workflow intensity across time. Identify burnout
-                    risks with color-coded gradients mapped to your activity
-                    output.
+                    Visualize your workflow intensity across time. Use Shadow
+                    Mode to compare your <strong>Intention</strong> (Plans) vs
+                    your <strong>Execution</strong> (Reality).
                   </p>
                 </div>
                 {/* Decorative Grid */}
@@ -282,49 +298,49 @@ const Landing: React.FC = () => {
               </div>
             </div>
 
-            {/* Feature 2: Cross-Silo */}
+            {/* Feature 2: Squads */}
             <div className="rounded-xl border border-[#27272a] bg-[#1c1c1f] overflow-hidden relative group p-8 hover:border-[#3f3f46] transition-colors">
               <div className="w-10 h-10 rounded bg-[#27272a] flex items-center justify-center mb-6 border border-[#3f3f46]">
-                <Share2 className="text-gray-200 w-5 h-5" />
+                <Users className="text-gray-200 w-5 h-5" />
               </div>
               <h4 className="text-lg font-bold mb-2 text-white">
-                Encrypted Sync
+                Social Loss Aversion
               </h4>
               <p className="text-gray-400 text-sm leading-relaxed mb-6">
-                Your data is sharded, encrypted, and synced across devices with
-                zero-knowledge architecture.
+                Join a Squad. If you miss a day, the grid breaks for everyone.
+                Leverage social pressure to maintain discipline.
               </p>
               <div className="flex gap-2">
                 <div className="px-3 py-1 rounded bg-[#27272a] border border-[#3f3f46] text-[10px] font-mono text-gray-400">
-                  AES-256
+                  Whale Clause
                 </div>
                 <div className="px-3 py-1 rounded bg-[#27272a] border border-[#3f3f46] text-[10px] font-mono text-gray-400">
-                  E2EE
+                  Pulse Sync
                 </div>
               </div>
             </div>
 
-            {/* Feature 3: Latency */}
+            {/* Feature 3: Burnout Guard */}
             <div className="rounded-xl border border-[#27272a] bg-[#1c1c1f] overflow-hidden relative group p-8 hover:border-[#3f3f46] transition-colors">
               <div className="w-10 h-10 rounded bg-[#27272a] flex items-center justify-center mb-6 border border-[#3f3f46]">
-                <Zap className="text-gray-200 w-5 h-5" />
+                <ShieldAlert className="text-gray-200 w-5 h-5" />
               </div>
               <h4 className="text-lg font-bold mb-2 text-white">
-                Anomaly Detection
+                Burnout Protection
               </h4>
               <p className="text-gray-400 text-sm leading-relaxed">
-                Algorithmic detection of productivity dips and variance from
-                your historical baseline.
+                Algorithmic detection of "Grind Risks" (High Volume / Low
+                Variance). The system forces you to rest before you break.
               </p>
               <div className="mt-6 p-3 bg-red-500/5 border border-red-500/20 rounded flex items-center gap-3">
                 <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping" />
                 <span className="text-[10px] text-red-400 font-mono uppercase">
-                  Variance Detected: -14% Output
+                  Risk Level: Critical (&gt;80%)
                 </span>
               </div>
             </div>
 
-            {/* Feature 4: Forecasting */}
+            {/* Feature 4: Proof of Work */}
             <div className="md:col-span-2 rounded-xl border border-[#27272a] bg-[#1c1c1f] overflow-hidden relative group hover:border-[#3f3f46] transition-colors">
               <div className="absolute right-0 top-0 bottom-0 w-1/2 bg-gradient-to-l from-[#09090b] to-transparent pointer-events-none" />
               <div className="p-8 h-full flex flex-col md:flex-row items-center gap-8 relative z-10">
@@ -333,30 +349,32 @@ const Landing: React.FC = () => {
                     <BarChart3 className="text-gray-200 w-5 h-5" />
                   </div>
                   <h4 className="text-lg font-bold mb-2 text-white">
-                    Predictive Modeling
+                    Proof of Work
                   </h4>
                   <p className="text-gray-400 text-sm">
-                    Our engine simulates future workflow states based on current
-                    velocity vectors to predict project completion.
+                    Generate high-fidelity visual résumés of your consistency.
+                    Export your "Year in Review" instantly to prove your
+                    discipline to the world.
                   </p>
                 </div>
                 <div className="flex-1 w-full">
                   <div className="bg-[#09090b] rounded border border-[#27272a] p-4 shadow-inner">
                     <div className="flex justify-between text-[10px] font-mono text-gray-500 uppercase mb-4">
-                      <span>Projected</span>
-                      <span>Q4 2025</span>
+                      <span>Export Preview</span>
+                      <span>2025</span>
                     </div>
-                    <div className="flex items-end gap-2 h-32">
-                      <div className="flex-1 bg-[#27272a] rounded-t-sm h-[40%]" />
-                      <div className="flex-1 bg-[#27272a] rounded-t-sm h-[60%]" />
-                      <div className="flex-1 bg-[#27272a] rounded-t-sm h-[55%]" />
-                      {/* Prediction Bar */}
-                      <div className="flex-1 bg-blue-500/10 rounded-t-sm h-[75%] border-t border-blue-500 border-dashed relative">
-                        <div className="absolute -top-5 left-1/2 -translate-x-1/2 text-blue-500 text-[9px] font-mono">
-                          EST
+                    <div className="flex items-center gap-4">
+                      <div className="w-16 h-16 rounded-full border-4 border-blue-500 flex items-center justify-center">
+                        <span className="text-white font-bold">98%</span>
+                      </div>
+                      <div className="space-y-1">
+                        <div className="h-2 w-24 bg-[#27272a] rounded overflow-hidden">
+                          <div className="h-full w-[80%] bg-blue-500" />
+                        </div>
+                        <div className="h-2 w-20 bg-[#27272a] rounded overflow-hidden">
+                          <div className="h-full w-[60%] bg-indigo-500" />
                         </div>
                       </div>
-                      <div className="flex-1 bg-blue-500/10 rounded-t-sm h-[85%] border-t border-blue-500 border-dashed" />
                     </div>
                   </div>
                 </div>
@@ -380,23 +398,23 @@ const Landing: React.FC = () => {
                     Developers
                   </h4>
                   <p className="text-xs text-gray-500 mt-1">
-                    Integrate with local environments via CLI.
+                    Track deep work streaks and prevent burnout cycles.
                   </p>
                 </button>
                 <button className="w-full text-left p-4 rounded hover:bg-[#161618] border-l-2 border-transparent transition-all opacity-60 hover:opacity-100">
                   <h4 className="font-bold text-gray-200 text-sm font-mono uppercase">
-                    Product Managers
+                    Founders
                   </h4>
                   <p className="text-xs text-gray-500 mt-1">
-                    Visualize team entropy and blockers.
+                    Visualize "Intention vs Reality" for project roadmaps.
                   </p>
                 </button>
                 <button className="w-full text-left p-4 rounded hover:bg-[#161618] border-l-2 border-transparent transition-all opacity-60 hover:opacity-100">
                   <h4 className="font-bold text-gray-200 text-sm font-mono uppercase">
-                    Quant Traders
+                    High Performers
                   </h4>
                   <p className="text-xs text-gray-500 mt-1">
-                    Track decision fatigue against market hours.
+                    Use Squads to enforce daily habits with accountability.
                   </p>
                 </button>
               </div>
@@ -410,29 +428,30 @@ const Landing: React.FC = () => {
                   <div className="w-3 h-3 rounded-full bg-yellow-500/20 border border-yellow-500/50" />
                   <div className="w-3 h-3 rounded-full bg-green-500/20 border border-green-500/50" />
                   <div className="ml-auto text-xs text-gray-600">
-                    kinetics-cli — v2.4.0
+                    gridlife-cli — v2.4.0
                   </div>
                 </div>
                 <div className="space-y-2 text-gray-400">
-                  <p>$ kinetics analyze --range=ytd --output=json</p>
+                  <p>$ kinetics analyze --range=week --output=json</p>
                   <p className="text-blue-500">
-                    ➜ Initializing Analysis Engine...
+                    ➜ Initializing Analytics Engine...
                   </p>
-                  <p>➜ Loading 14,204 vectors from local_db</p>
-                  <p>➜ Calculating velocity...</p>
+                  <p>➜ Calculating Integrity Score...</p>
+                  <p>➜ Detecting Streak Hazards...</p>
                   <br />
-                  <p className="text-emerald-500">✔ REPORT GENERATED [0.4s]</p>
+                  <p className="text-emerald-500">✔ WEEKLY REPORT READY</p>
                   <div className="pl-4 border-l border-[#27272a] text-xs space-y-1 mt-2">
                     <p>
-                      Total_Focus: <span className="text-white">1,240h</span>
+                      Total_Focus: <span className="text-white">42h</span>
                     </p>
                     <p>
-                      Peak_Flow:{" "}
-                      <span className="text-white">09:00 - 11:30</span>
+                      Consistency: <span className="text-white">98.4%</span>
                     </p>
                     <p>
-                      Efficiency_Score:{" "}
-                      <span className="text-blue-400">98.4/100</span>
+                      Top_Category: <span className="text-blue-400">DEV</span>
+                    </p>
+                    <p>
+                      Burnout_Risk: <span className="text-green-500">LOW</span>
                     </p>
                   </div>
                 </div>
@@ -459,7 +478,10 @@ const Landing: React.FC = () => {
             productivity DNA.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <button className="bg-white text-black h-14 px-8 rounded-lg font-bold text-sm uppercase tracking-wide hover:bg-gray-200 transition-all">
+            <button
+              onClick={() => navigate("/create")}
+              className="bg-white text-black h-14 px-8 rounded-lg font-bold text-sm uppercase tracking-wide hover:bg-gray-200 transition-all"
+            >
               Initialize Free Tier
             </button>
             <button className="bg-transparent border border-[#27272a] text-gray-300 h-14 px-8 rounded-lg font-bold text-sm uppercase tracking-wide hover:bg-[#27272a] transition-all">
@@ -469,21 +491,21 @@ const Landing: React.FC = () => {
 
           <div className="mt-16 pt-12 border-t border-[#27272a] grid grid-cols-2 md:grid-cols-4 gap-8">
             <div className="text-center">
-              <div className="text-3xl font-bold text-white font-mono">1B+</div>
+              <div className="text-3xl font-bold text-white font-mono">15+</div>
               <div className="text-[10px] text-gray-500 mt-1 uppercase tracking-widest">
-                Vectors Processed
+                Days Streak
               </div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-white font-mono">0ms</div>
+              <div className="text-3xl font-bold text-white font-mono">0</div>
               <div className="text-[10px] text-gray-500 mt-1 uppercase tracking-widest">
-                Local Latency
+                Missing Slots
               </div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-white font-mono">42%</div>
+              <div className="text-3xl font-bold text-white font-mono">98%</div>
               <div className="text-[10px] text-gray-500 mt-1 uppercase tracking-widest">
-                Efficiency Gain
+                Consistency
               </div>
             </div>
             <div className="text-center">
@@ -521,12 +543,12 @@ const Landing: React.FC = () => {
               <ul className="space-y-2 text-gray-500 text-xs font-mono">
                 <li>
                   <a className="hover:text-blue-500 transition-colors" href="#">
-                    Core Engine
+                    The Grid
                   </a>
                 </li>
                 <li>
                   <a className="hover:text-blue-500 transition-colors" href="#">
-                    API Access
+                    Squads
                   </a>
                 </li>
                 <li>

@@ -1,18 +1,47 @@
 import React, { useState, useMemo } from 'react';
 import { 
   startOfWeek, endOfWeek, startOfMonth, endOfMonth, 
-  startOfYear, endOfYear, eachDayOfInterval, isSameDay, format 
+  startOfYear, endOfYear, eachDayOfInterval, isSameDay, format, subDays 
 } from 'date-fns';
 import { COLORS, type HeatmapDataPoint } from '../../types/index';
 
-/**
- * Maps a 0.0 - 1.0 performance score to the 5-step green scale.
- * Note: Your COLORS.performanceScale starts with Lightest [0] and ends with Darkest [4].
- */
-const getPerformanceColor = (performanceScore: number = 0, isGhost: boolean = false): string => {
-  if (performanceScore === 0 && !isGhost) return COLORS.performanceScale[5]; // Empty gray
+// Extends the base type to safely handle the specific metrics without 'as any' casting
+interface ExtendedHeatmapDataPoint extends HeatmapDataPoint {
+  integrityScore?: number;
+  intentionVolume?: number;
+  executionVolume?: number;
+  isGhost?: boolean;
+  riskLevel?: 'high' | 'warning' | 'none';
+  overlayScores?: Record<string, number>;
+}
 
-  // Mapping logic: Low score = Light Green [0], High score = Darkest Green [4]
+const SHADOW_SCALE = [
+  '#f3f4f6', // Lightest (Empty/Low Intention)
+  '#e5e7eb',
+  '#9ca3af',
+  '#6b7280',
+  '#374151'  // Darkest
+];
+
+const getPerformanceColor = (performanceScore: number = 0, isGhost: boolean = false, mode: 'performance' | 'shadow' = 'performance'): string => {
+  // 1. Handle Shadow Mode FIRST
+  if (mode === 'shadow') {
+    let baseColor: string;
+    if (performanceScore <= 0.05) baseColor = SHADOW_SCALE[0]; 
+    else if (performanceScore < 0.2) baseColor = SHADOW_SCALE[0];
+    else if (performanceScore < 0.4) baseColor = SHADOW_SCALE[1];
+    else if (performanceScore < 0.6) baseColor = SHADOW_SCALE[2];
+    else if (performanceScore < 0.8) baseColor = SHADOW_SCALE[3];
+    else baseColor = SHADOW_SCALE[4];
+
+    if (isGhost) return baseColor + '80';
+    return baseColor;
+  }
+
+  // 2. Handle Empty Performance Standard Mode
+  if (performanceScore === 0 && !isGhost) return COLORS.performanceScale[5]; 
+
+  // 3. Handle Standard Performance Gradient
   let baseColor: string;
   if (performanceScore < 0.2) baseColor = COLORS.performanceScale[0];
   else if (performanceScore < 0.4) baseColor = COLORS.performanceScale[1];
@@ -20,23 +49,17 @@ const getPerformanceColor = (performanceScore: number = 0, isGhost: boolean = fa
   else if (performanceScore < 0.8) baseColor = COLORS.performanceScale[3];
   else baseColor = COLORS.performanceScale[4];
 
-  // Return semi-transparent ghost green for recovered days
   if (isGhost) {
-    return baseColor + '80'; // Adds 50% alpha transparency
+    return baseColor + '80';
   }
 
   return baseColor;
 };
 
 const createDataMap = (data: HeatmapDataPoint[]) => {
-  const map = new Map<string, { performanceScore: number; isGhost: boolean; overlayScores?: Record<string, number>; riskLevel?: HeatmapDataPoint['riskLevel'] }>();
+  const map = new Map<string, ExtendedHeatmapDataPoint>();
   data.forEach(d => {
-    map.set(format(d.date, 'yyyy-MM-dd'), { 
-      performanceScore: d.performanceScore || 0,
-      isGhost: d.isGhost || false,
-      overlayScores: d.overlayScores,
-      riskLevel: d.riskLevel || 'none'
-    });
+    map.set(format(d.date, 'yyyy-MM-dd'), d as ExtendedHeatmapDataPoint);
   });
   return map;
 };
@@ -46,19 +69,29 @@ interface Props {
   selectedDate: Date;
   onSelect: (date: Date) => void;
   burnoutRiskPercent?: number;
+  mode?: 'performance' | 'shadow';
 }
 
-export const MonthlyHeatmap: React.FC<Props> = ({ data, selectedDate, onSelect }) => {
+export const MonthlyHeatmap: React.FC<Props> = ({ data, selectedDate, onSelect, mode = 'performance' }) => {
   const [isFullView, setIsFullView] = useState(false);
+  
+  // Memoize map for O(1) lookups
   const dataMap = useMemo(() => createDataMap(data), [data]);
+  
+  // Calculate max volumes for normalization
+  const maxIntention = useMemo(() => Math.max(...data.map(d => ((d as ExtendedHeatmapDataPoint).intentionVolume || 0)), 1), [data]);
+  const maxExecution = useMemo(() => Math.max(...data.map(d => ((d as ExtendedHeatmapDataPoint).executionVolume || 0)), 1), [data]);
 
   const calendarDays = useMemo(() => {
     if (isFullView) {
+      // FIX: Align the start of the array with the start of the week (Sunday)
+      // This ensures index 0 of the array corresponds to row 0 in the visual grid
       return eachDayOfInterval({
-        start: startOfYear(selectedDate),
-        end: endOfYear(selectedDate)
+        start: startOfWeek(startOfYear(selectedDate)),
+        end: endOfWeek(endOfYear(selectedDate))
       });
     }
+    // Monthly view is standard row-major, so standard bounding works
     return eachDayOfInterval({
       start: startOfWeek(startOfMonth(selectedDate)),
       end: endOfWeek(endOfMonth(selectedDate))
@@ -84,17 +117,31 @@ export const MonthlyHeatmap: React.FC<Props> = ({ data, selectedDate, onSelect }
           {isFullView ? 'Show Month' : 'Full View'}
         </button>
       </div>
+
+      <div className="mt-4 mb-2">
+        {/* FIX: Pass dataMap for O(1) lookup in Sparkline */}
+        <IntegritySparkline dataMap={dataMap} selectedDate={selectedDate} />
+      </div>
       
       <div className="flex-1 overflow-x-auto custom-scrollbar">
         {isFullView ? (
           <div className="flex gap-1 min-w-max pb-4">
+             {/* Year View: Column Major (Weeks are columns) */}
              {Array.from({ length: 53 }).map((_, weekIndex) => (
                 <div key={weekIndex} className="flex flex-col gap-1">
                   {[0, 1, 2, 3, 4, 5, 6].map((dayOfWeek) => {
+                    // Safe index calculation
                     const dayIndex = (weekIndex * 7) + dayOfWeek;
+                    
+                    // Stop if we exceed generated days
+                    if (dayIndex >= calendarDays.length) return <div key={dayOfWeek} className="w-[13px] h-[13px]" />;
+                    
                     const date = calendarDays[dayIndex];
-                    if (!date) return <div key={dayOfWeek} className="w-[13px] h-[13px]" />;
-
+                    
+                    // Visual Cleanup: Don't render days from previous year (if they bled into the first week)
+                    // unless you want a continuous stream. Usually cleaner to dim them or hide them.
+                    // Here we render them but maybe opacity could apply if stricter bounds needed.
+                    
                     const dateKey = format(date, 'yyyy-MM-dd');
                     const dayData = dataMap.get(dateKey);
                     
@@ -102,15 +149,14 @@ export const MonthlyHeatmap: React.FC<Props> = ({ data, selectedDate, onSelect }
                       <div key={dateKey} className="relative">
                         <HeatmapCell 
                           date={date}
-                          performanceScore={dayData?.performanceScore ?? 0}
-                          isGhost={dayData?.isGhost ?? false}
-                          overlayScores={dayData?.overlayScores}
-                          riskLevel={dayData?.riskLevel}
+                          data={dayData}
                           isSelected={isSameDay(date, selectedDate)}
                           onSelect={onSelect}
                           size="small"
+                          mode={mode}
+                          maxIntention={maxIntention}
+                          maxExecution={maxExecution}
                         />
-                        {/* Overlay visual: render blended layers on top when overlayScores present */}
                         {dayData?.overlayScores && (
                           <div className="absolute inset-0 pointer-events-none">
                             <OverlayHeatmapCell overlayScores={dayData.overlayScores} sizeCls="w-[13px] h-[13px] rounded-[2px]" />
@@ -124,6 +170,7 @@ export const MonthlyHeatmap: React.FC<Props> = ({ data, selectedDate, onSelect }
           </div>
         ) : (
           <>
+            {/* Month View: Row Major (Standard Calendar) */}
             <div className="grid grid-cols-7 gap-1.5 mb-2">
               {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => (
                 <div key={i} className="text-[10px] text-center text-gray-600 font-mono">{d}</div>
@@ -139,17 +186,17 @@ export const MonthlyHeatmap: React.FC<Props> = ({ data, selectedDate, onSelect }
                       <div className="relative">
                         <HeatmapCell 
                           date={date}
-                          performanceScore={dayData?.performanceScore ?? 0}
-                          isGhost={dayData?.isGhost ?? false}
-                          overlayScores={dayData?.overlayScores}
-                          riskLevel={dayData?.riskLevel}
+                          data={dayData}
                           isSelected={isSameDay(date, selectedDate)}
                           onSelect={onSelect}
                           size="normal"
+                          mode={mode}
+                          maxIntention={maxIntention}
+                          maxExecution={maxExecution}
                         />
                         {dayData?.overlayScores && (
                           <div className="absolute inset-0 pointer-events-none">
-                            <OverlayHeatmapCell overlayScores={dayData.overlayScores} sizeCls="aspect-square rounded-md" />
+                            <OverlayHeatmapCell overlayScores={dayData?.overlayScores} sizeCls="aspect-square rounded-md" />
                           </div>
                         )}
                       </div>
@@ -161,29 +208,31 @@ export const MonthlyHeatmap: React.FC<Props> = ({ data, selectedDate, onSelect }
         )}
       </div>
 
-      {/* Legend */}
       <div className="mt-auto pt-6 border-t" style={{ borderColor: COLORS.border }}>
         <div className="flex justify-between items-center text-[10px] font-mono text-gray-500 uppercase tracking-widest mb-3">
-          <span>Performance Score (%):</span>
+          <span>{mode === 'shadow' ? 'Shadow Intensity' : 'Performance Score'}:</span>
           <div className="flex items-center gap-1">
-            <div className="w-2 h-2 rounded-sm" style={{ backgroundColor: COLORS.performanceScale[5] }} />
-            <span>0%</span>
-            <div className="w-2 h-2 rounded-sm" style={{ backgroundColor: COLORS.performanceScale[0] }} />
-            <span>20%</span>
-            <div className="w-2 h-2 rounded-sm" style={{ backgroundColor: COLORS.performanceScale[1] }} />
-            <span>40%</span>
-            <div className="w-2 h-2 rounded-sm" style={{ backgroundColor: COLORS.performanceScale[2] }} />
-            <span>60%</span>
-            <div className="w-2 h-2 rounded-sm" style={{ backgroundColor: COLORS.performanceScale[3] }} />
-            <span>80%</span>
-            <div className="w-2 h-2 rounded-sm" style={{ backgroundColor: COLORS.performanceScale[4] }} />
-            <span>100%</span>
+             {/* Dynamic Legend based on mode */}
+            {mode === 'shadow' ? (
+               <>
+                <div className="w-2 h-2 rounded-sm" style={{ backgroundColor: SHADOW_SCALE[0] }} />
+                <span>Low</span>
+                <div className="w-2 h-2 rounded-sm" style={{ backgroundColor: SHADOW_SCALE[2] }} />
+                <span>Med</span>
+                <div className="w-2 h-2 rounded-sm" style={{ backgroundColor: SHADOW_SCALE[4] }} />
+                <span>High</span>
+               </>
+            ) : (
+              <>
+                <div className="w-2 h-2 rounded-sm" style={{ backgroundColor: COLORS.performanceScale[5] }} />
+                <span>0%</span>
+                <div className="w-2 h-2 rounded-sm" style={{ backgroundColor: COLORS.performanceScale[2] }} />
+                <span>50%</span>
+                <div className="w-2 h-2 rounded-sm" style={{ backgroundColor: COLORS.performanceScale[4] }} />
+                <span>100%</span>
+              </>
+            )}
           </div>
-        </div>
-        <div className="flex items-center gap-2 text-[10px] font-mono text-gray-500 uppercase tracking-widest">
-          <span>Legend:</span>
-          <div className="w-2 h-2 rounded-sm border border-dashed" style={{ backgroundColor: COLORS.performanceScale[3] + '80' }} />
-          <span>Ghost (Recovered)</span>
         </div>
       </div>
     </div>
@@ -194,19 +243,32 @@ export const MonthlyHeatmap: React.FC<Props> = ({ data, selectedDate, onSelect }
 
 interface CellProps {
   date: Date;
-  performanceScore: number;
-  isGhost: boolean;
-  overlayScores?: Record<string, number>;
-  riskLevel?: HeatmapDataPoint['riskLevel'];
+  data?: ExtendedHeatmapDataPoint;
   isSelected: boolean;
   onSelect: (date: Date) => void;
   size: 'normal' | 'small';
+  mode: 'performance' | 'shadow';
+  maxIntention: number;
+  maxExecution: number;
 }
 
-const HeatmapCell: React.FC<CellProps> = ({ date, performanceScore, isGhost, overlayScores, riskLevel, isSelected, onSelect, size }) => {
-  const bgColor = getPerformanceColor(performanceScore, isGhost);
+const HeatmapCell: React.FC<CellProps> = ({ 
+  date, data, isSelected, onSelect, size, mode, maxIntention, maxExecution 
+}) => {
+  const performanceScore = data?.performanceScore || 0;
+  const isGhost = data?.isGhost || false;
+  const integrityScore = data?.integrityScore;
+  const intentionVolume = data?.intentionVolume || 0;
+  const executionVolume = data?.executionVolume || 0;
+  const riskLevel = data?.riskLevel;
+
+  // Normalize values
+  const intentionNorm = maxIntention > 0 ? intentionVolume / maxIntention : 0;
+  const executionNorm = maxExecution > 0 ? executionVolume / maxExecution : 0;
+
   const sizeClasses = size === 'normal' ? 'aspect-square rounded-md' : 'w-[13px] h-[13px] rounded-[2px]';
-  const percentageDisplay = (performanceScore * 100).toFixed(0);
+  
+  // Dynamic Risk Styles
   const riskStyles: React.CSSProperties = {};
   if (riskLevel === 'high') {
     riskStyles.borderColor = 'rgba(124,58,237,0.7)';
@@ -216,10 +278,54 @@ const HeatmapCell: React.FC<CellProps> = ({ date, performanceScore, isGhost, ove
     riskStyles.boxShadow = '0 0 6px rgba(234,179,8,0.18)';
   }
 
+  // Selection Styles
+  const selectionStyles: React.CSSProperties = isSelected ? {
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+    boxShadow: `0 0 8px rgba(255,255,255,0.2)`
+  } : {};
+
+  // --- RENDER LOGIC ---
+
+  // 1. Shadow Mode Render (Dual Layer)
+  if (mode === 'shadow') {
+    const shadowColor = getPerformanceColor(intentionNorm, false, 'shadow');
+    const execColor = getPerformanceColor(executionNorm, isGhost, 'performance');
+    
+    return (
+      <div 
+        onClick={() => onSelect(date)} 
+        title={`${format(date, 'MMM dd')}: Integrity: ${integrityScore !== undefined ? Math.round(integrityScore * 100) + '%' : '—'}`}
+        className={`
+          relative ${sizeClasses} cursor-pointer transition-all duration-200 border
+          ${isSelected ? 'scale-125 z-10 border-white/30' : 'border-transparent hover:border-white/10'}
+        `}
+        style={{ ...riskStyles, ...selectionStyles }}
+      > 
+        {/* Background: Intention (Grayscale) */}
+        <div className={`absolute inset-0 ${sizeClasses}`} style={{ backgroundColor: shadowColor }} />
+        
+        {/* Foreground: Execution (Green Overlay) - Only if there is execution */}
+        {executionNorm > 0 && (
+          <div 
+            className={`absolute inset-0 ${sizeClasses}`} 
+            style={{ 
+              backgroundColor: execColor, 
+              mixBlendMode: 'soft-light', 
+              opacity: 0.8 
+            }} 
+          />
+        )}
+      </div>
+    );
+  }
+
+  // 2. Standard Performance Render
+  const bgColor = getPerformanceColor(performanceScore, isGhost, 'performance');
+  
   return (
     <div
       onClick={() => onSelect(date)}
-      title={`${format(date, 'MMM dd')}: ${percentageDisplay}% performance${isGhost ? ' (Recovered)' : ''}${riskLevel && riskLevel !== 'none' ? ` • Risk: ${riskLevel}` : ''}`}
+      title={`${format(date, 'MMM dd')}: ${(performanceScore * 100).toFixed(0)}%`}
       className={`
         ${sizeClasses}
         cursor-pointer transition-all duration-200 border
@@ -228,17 +334,13 @@ const HeatmapCell: React.FC<CellProps> = ({ date, performanceScore, isGhost, ove
       `}
       style={{ 
         backgroundColor: bgColor,
-        ...(isSelected && {
-          borderColor: 'rgba(255, 255, 255, 0.3)',
-          boxShadow: `0 0 8px ${bgColor}60`
-        }),
+        ...selectionStyles,
         ...riskStyles
       }}
     />
   );
 };
 
-// If overlayScores are present, render multiple colored layers blended together
 const OverlayHeatmapCell: React.FC<{ overlayScores?: Record<string, number>; sizeCls: string }> = ({ overlayScores, sizeCls }) => {
   if (!overlayScores) return null;
   const cats = Object.keys(overlayScores);
@@ -251,6 +353,53 @@ const OverlayHeatmapCell: React.FC<{ overlayScores?: Record<string, number>; siz
           <div key={c} className="absolute inset-0 rounded-sm" style={{ backgroundColor: color, opacity: 0.7 - (i * 0.1) }} />
         );
       })}
+    </div>
+  );
+};
+
+// FIX: Updated props to accept the Map directly
+const IntegritySparkline: React.FC<{ dataMap: Map<string, ExtendedHeatmapDataPoint>; selectedDate: Date }> = ({ dataMap, selectedDate }) => {
+  const days = eachDayOfInterval({ start: subDays(selectedDate, 29), end: selectedDate });
+  
+  const values = days.map((d) => {
+    const key = format(d, 'yyyy-MM-dd');
+    const point = dataMap.get(key);
+    
+    // Default logic
+    if (!point) return 0;
+
+    const iv = point.intentionVolume || 0;
+    const ev = point.executionVolume || 0;
+    
+    // If no intention, integrity is undefined/NA, but visually 0 helps clean the graph
+    if (iv === 0) return 0; 
+    
+    return Math.min(1, ev / iv);
+  });
+
+  const w = 240, h = 36;
+  const stepX = w / Math.max(1, values.length - 1);
+  const path = values.map((v, i) => `${i === 0 ? 'M' : 'L'} ${i * stepX} ${h - v * h}`).join(' ');
+
+  // Filter for valid data points to calculate average
+  const activeValues = values.filter(v => v > 0);
+  const avg = activeValues.length > 0 ? (activeValues.reduce((a,b)=>a+b,0) / activeValues.length) : 0;
+
+  const last3 = values.slice(-3);
+  const warn = last3.length === 3 && last3.every(v => v > 0 && v < 0.8);
+
+  return (
+    <div className="flex items-center gap-3">
+      <svg width={w} height={h} className="rounded" viewBox={`0 0 ${w} ${h}`}>
+        {/* Background track */}
+        <path d={`M 0 ${h} L ${w} ${h}`} stroke="#374151" strokeWidth={1} />
+        {/* Data Line */}
+        <path d={path} stroke="#3b82f6" strokeWidth={2} fill="none" strokeLinejoin="round" strokeLinecap="round" />
+      </svg>
+      <div className="text-xs font-mono text-gray-400">
+        Integrity (30d): <span className="text-white">{Math.round(avg * 100)}%</span>
+        {warn && <span className="ml-2 text-yellow-400">• Planning Fallacy</span>}
+      </div>
     </div>
   );
 };

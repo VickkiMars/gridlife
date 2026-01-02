@@ -1,10 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
-import type { DayEntry } from '../types/index';
+import type { DayEntry, Squad } from '../types/index';
 
 const STORAGE_KEY = 'kinetics-data-v1';
 
 export const usePersistentData = () => {
   const [entries, setEntries] = useState<DayEntry[]>([]);
+  const [squads, setSquads] = useState<Squad[]>([]);
 
   // Load
   useEffect(() => {
@@ -12,7 +13,27 @@ export const usePersistentData = () => {
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        setEntries(parsed.map((d: any) => ({ ...d, date: new Date(d.date) })));
+        // Expect stored shape: { entries: DayEntry[], squads?: Squad[] }
+        const rawEntries = Array.isArray(parsed) ? parsed : parsed.entries || [];
+        const rawSquads = parsed.squads || [];
+        setEntries(rawEntries.map((d: any) => ({
+          ...d,
+          date: new Date(d.date),
+          tasks: (d.tasks || []).map((t: any) => ({
+            ...t,
+            date: t.date ? new Date(t.date) : new Date(),
+            created_at: t.created_at ? new Date(t.created_at) : new Date(t.date || Date.now()),
+            completed_at: t.completed_at ? new Date(t.completed_at) : undefined,
+            impact_weight: t.impact_weight ?? t.weight ?? 3,
+            status: t.status ?? (t.completed ? 'completed' : 'open')
+          }))
+        })));
+
+        // load squads if present
+        setSquads(rawSquads.map((s: any) => ({
+          ...s,
+          membership_history: (s.membership_history || []).map((h: any) => ({ ...h, start_at: new Date(h.start_at), end_at: h.end_at ? new Date(h.end_at) : undefined }))
+        })));
       } catch (e) {
         console.error("Data load error", e);
       }
@@ -21,10 +42,11 @@ export const usePersistentData = () => {
 
   // Save
   useEffect(() => {
-    if (entries.length > 0) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
-    }
-  }, [entries]);
+    // Save combined shape
+    const payload: any = { entries };
+    if (squads.length) payload.squads = squads;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+  }, [entries, squads]);
 
   const exportData = useCallback(() => {
     const dataStr = JSON.stringify(entries, null, 2);
@@ -44,7 +66,39 @@ export const usePersistentData = () => {
       try {
         const json = JSON.parse(e.target?.result as string);
         if (Array.isArray(json)) {
-          setEntries(json.map((d: any) => ({ ...d, date: new Date(d.date) })));
+          setEntries(json.map((d: any) => ({
+            ...d,
+            date: new Date(d.date),
+            tasks: (d.tasks || []).map((t: any) => ({
+              ...t,
+              date: t.date ? new Date(t.date) : new Date(),
+              created_at: t.created_at ? new Date(t.created_at) : new Date(t.date || Date.now()),
+              completed_at: t.completed_at ? new Date(t.completed_at) : undefined,
+              impact_weight: t.impact_weight ?? t.weight ?? 3,
+              status: t.status ?? (t.completed ? 'completed' : 'open')
+            }))
+          })));
+        } else if (json && Array.isArray(json.entries)) {
+          // import object with entries + squads
+          setEntries(json.entries.map((d: any) => ({
+            ...d,
+            date: new Date(d.date),
+            tasks: (d.tasks || []).map((t: any) => ({
+              ...t,
+              date: t.date ? new Date(t.date) : new Date(),
+              created_at: t.created_at ? new Date(t.created_at) : new Date(t.date || Date.now()),
+              completed_at: t.completed_at ? new Date(t.completed_at) : undefined,
+              impact_weight: t.impact_weight ?? t.weight ?? 3,
+              status: t.status ?? (t.completed ? 'completed' : 'open')
+            }))
+          })));
+
+          if (Array.isArray(json.squads)) {
+            setSquads(json.squads.map((s: any) => ({
+              ...s,
+              membership_history: (s.membership_history || []).map((h: any) => ({ ...h, start_at: new Date(h.start_at), end_at: h.end_at ? new Date(h.end_at) : undefined }))
+            })));
+          }
         }
       } catch (err) {
         alert("Invalid JSON structure");
@@ -53,5 +107,5 @@ export const usePersistentData = () => {
     reader.readAsText(file);
   }, []);
 
-  return { entries, setEntries, exportData, importData };
+  return { entries, setEntries, exportData, importData, squads, setSquads };
 };
